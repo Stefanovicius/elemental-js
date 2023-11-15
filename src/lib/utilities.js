@@ -6,7 +6,7 @@ export function isWhitespace(char) {
   return char === ' ' || char === '\t' || char === '\n' || char === '\r'
 }
 
-export function findClosestNonWhitespace(str, i) {
+export function getNonWhitespaceIndex(str, i) {
   while (i < str.length) {
     if (str[i] !== ' ' && str[i] !== '\t' && str[i] !== '\n' && str[i] !== '\r')
       return i

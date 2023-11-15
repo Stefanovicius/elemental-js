@@ -1,4 +1,4 @@
-import { isQuote, isWhitespace, findClosestNonWhitespace } from './utilities'
+import { isQuote, isWhitespace, getNonWhitespaceIndex } from './utilities'
 
 const state = {
   TAG: 0,
@@ -8,7 +8,7 @@ const state = {
 }
 
 export function parse(strings, interpolations) {
-  const tagIndex = findClosestNonWhitespace(strings[0], 0)
+  const tagIndex = getNonWhitespaceIndex(strings[0], 0)
   if (tagIndex === -1) throw Error('Tag is not defined')
 
   let currentState = state.TAG
@@ -26,43 +26,52 @@ export function parse(strings, interpolations) {
   }
 
   strings.forEach((string, stringIndex) => {
+
     let charIndex = stringIndex === 0 ? tagIndex : 0
     const endIndex = string.length
+
+    const switchState = () => {
+      charIndex = getNonWhitespaceIndex(string, charIndex)
+      if (charIndex === -1) return result
+      const nextChar = string.charAt(charIndex)
+      if (isQuote(nextChar)) {
+        currentState = state.CONTENT
+        singleQuote = nextChar === "'"
+      } else {
+        currentState = state.ATTRIBUTE
+        parsedText += nextChar
+      }
+    }
 
     for (; charIndex <= endIndex; charIndex++) {
       const char = string.charAt(charIndex)
 
       switch (currentState) {
         case state.TAG:
+          const setTag = () => result.tag = parsedText
           if (charIndex === endIndex) {
-            result.tag = parsedText
+            setTag()
             return result
           }
           if (isWhitespace(char)) {
-            result.tag = parsedText
+            setTag()
             parsedText = ''
-            charIndex = findClosestNonWhitespace(string, charIndex)
-            if (charIndex === -1) return result
-            const nextChar = string.charAt(charIndex)
-            if (isQuote(nextChar)) {
-              singleQuote = nextChar === "'"
-              currentState = state.CONTENT
-            } else {
-              currentState = state.ATTRIBUTE
-              parsedText += nextChar
-            }
+            switchState()
             continue
           }
           parsedText += char
           break
 
         case state.ATTRIBUTE:
-          if (char === '=') {
+          const setAttribute = (isBoolean) => {
             currentAttribute = parsedText
-            result.attributes[currentAttribute] = []
+            result.attributes[currentAttribute] = isBoolean ? [isBoolean] : []
             parsedText = ''
+          }
+          if (char === '=') {
+            setAttribute()
             const nextChar = string.charAt(++charIndex)
-            if (nextChar && isQuote(nextChar)) {
+            if (isQuote(nextChar)) {
               singleQuote = nextChar === "'"
               currentState = state.ATTRIBUTE_VALUE
               continue
@@ -71,49 +80,39 @@ export function parse(strings, interpolations) {
               `No opening quote, reading attribute: '${currentAttribute}'`,
             )
           }
-          if (isWhitespace(char) || charIndex === endIndex) {
-            currentAttribute = parsedText
-            result.attributes[currentAttribute] = [true]
-            parsedText = ''
-            if (charIndex === endIndex) return result
-            charIndex = findClosestNonWhitespace(string, charIndex)
-            if (charIndex === -1) return result
-            const nextChar = string.charAt(charIndex)
-            if (isQuote(nextChar)) {
-              singleQuote = nextChar === "'"
-              currentState = state.CONTENT
-            } else {
-              currentState = state.ATTRIBUTE
-              parsedText += nextChar
-            }
+          const theEnd = charIndex === endIndex
+          if (theEnd || isWhitespace(char)) {
+            setAttribute(true)
+            if (theEnd) return result
+            switchState()
             continue
           }
           parsedText += char
           break
 
         case state.ATTRIBUTE_VALUE:
-          if (charIndex === endIndex) {
+          const attributeValuePush = (resetAttribute = false) => {
             if (parsedText) {
               result.attributes[currentAttribute].push(parsedText)
               parsedText = ''
+              resetAttribute && (currentAttribute = '')
             }
+          }
+          if (charIndex === endIndex) {
+            attributeValuePush()
             result.attributes[currentAttribute].push(
               interpolations[stringIndex],
             )
             continue
           }
           if (isQuote(char) && endQuote(char)) {
-            if (parsedText) {
-              result.attributes[currentAttribute].push(parsedText)
-              currentAttribute = ''
-              parsedText = ''
-            }
-            charIndex = findClosestNonWhitespace(string, ++charIndex)
+            attributeValuePush(true)
+            charIndex = getNonWhitespaceIndex(string, ++charIndex)
             if (charIndex === -1) return result
             const nextChar = string.charAt(charIndex)
             if (isQuote(nextChar)) {
-              singleQuote = nextChar === "'"
               currentState = state.CONTENT
+              singleQuote = nextChar === "'"
             } else {
               currentState = state.ATTRIBUTE
               parsedText += nextChar
