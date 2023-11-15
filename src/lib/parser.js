@@ -1,12 +1,22 @@
+import { isQuote, isWhitespace, findClosestNonWhitespace } from './utilities'
+
+const state = {
+  TAG: 0,
+  ATTRIBUTE: 1,
+  ATTRIBUTE_VALUE: 2,
+  CONTENT: 3,
+}
+
 export function parse(strings, interpolations) {
   const tagIndex = findClosestNonWhitespace(strings[0], 0)
   if (tagIndex === -1) throw Error('Tag is not defined')
 
-  let parsing = 'tag'
-  let currentAttribute = ''
+  let currentState = state.TAG
+  let currentAttribute = null
   let parsedText = ''
   let singleQuote = false
-  const endingQuote = (char) =>
+
+  const endQuote = (char) =>
     (singleQuote && char === "'") || (!singleQuote && char === '"')
 
   const result = {
@@ -17,48 +27,72 @@ export function parse(strings, interpolations) {
 
   strings.forEach((string, stringIndex) => {
     let charIndex = stringIndex === 0 ? tagIndex : 0
-    for (; charIndex <= string.length; charIndex++) {
+    const endIndex = string.length
+
+    for (; charIndex <= endIndex; charIndex++) {
       const char = string.charAt(charIndex)
-      if (parsing === 'tag') {
-        if (charIndex === string.length) {
-          result.tag = parsedText
-          return result
-        }
-        if (isWhitespace(char)) {
-          result.tag = parsedText
-          parsedText = ''
-          charIndex = findClosestNonWhitespace(string, charIndex)
-          if (charIndex === -1) return result
-          const nextChar = string.charAt(charIndex)
-          if (isQuote(nextChar)) {
-            singleQuote = nextChar === "'"
-            parsing = 'content'
-          } else {
-            parsing = 'attribute'
-            parsedText += nextChar
+
+      switch (currentState) {
+        case state.TAG:
+          if (charIndex === endIndex) {
+            result.tag = parsedText
+            return result
           }
-          continue
-        }
-        parsedText += char
-      }
-      if (parsing === 'content') {
-        if (charIndex === string.length) {
-          if (parsedText) {
-            result.content.push(parsedText)
+          if (isWhitespace(char)) {
+            result.tag = parsedText
             parsedText = ''
+            charIndex = findClosestNonWhitespace(string, charIndex)
+            if (charIndex === -1) return result
+            const nextChar = string.charAt(charIndex)
+            if (isQuote(nextChar)) {
+              singleQuote = nextChar === "'"
+              currentState = state.CONTENT
+            } else {
+              currentState = state.ATTRIBUTE
+              parsedText += nextChar
+            }
+            continue
           }
-          result.content.push(interpolations[stringIndex])
-          continue
-        }
-        if (isQuote(char) && endingQuote(char)) {
-          if (parsedText) result.content.push(parsedText)
-          return result
-        }
-        parsedText += char
-      }
-      if (parsing === 'attribute') {
-        if (currentAttribute) {
-          if (charIndex === string.length) {
+          parsedText += char
+          break
+
+        case state.ATTRIBUTE:
+          if (char === '=') {
+            currentAttribute = parsedText
+            result.attributes[currentAttribute] = []
+            parsedText = ''
+            const nextChar = string.charAt(++charIndex)
+            if (nextChar && isQuote(nextChar)) {
+              singleQuote = nextChar === "'"
+              currentState = state.ATTRIBUTE_VALUE
+              continue
+            }
+            throw Error(
+              `No opening quote, reading attribute: '${currentAttribute}'`,
+            )
+          }
+          if (isWhitespace(char) || charIndex === endIndex) {
+            currentAttribute = parsedText
+            result.attributes[currentAttribute] = [true]
+            parsedText = ''
+            if (charIndex === endIndex) return result
+            charIndex = findClosestNonWhitespace(string, charIndex)
+            if (charIndex === -1) return result
+            const nextChar = string.charAt(charIndex)
+            if (isQuote(nextChar)) {
+              singleQuote = nextChar === "'"
+              currentState = state.CONTENT
+            } else {
+              currentState = state.ATTRIBUTE
+              parsedText += nextChar
+            }
+            continue
+          }
+          parsedText += char
+          break
+
+        case state.ATTRIBUTE_VALUE:
+          if (charIndex === endIndex) {
             if (parsedText) {
               result.attributes[currentAttribute].push(parsedText)
               parsedText = ''
@@ -68,70 +102,45 @@ export function parse(strings, interpolations) {
             )
             continue
           }
-          if (isQuote(char)) {
-            if (endingQuote(char)) {
-              if (parsedText) {
-                result.attributes[currentAttribute].push(parsedText)
-                currentAttribute = ''
-                parsedText = ''
-              }
-              charIndex = findClosestNonWhitespace(string, ++charIndex)
-              if (charIndex === -1) return result
-              const nextChar = string.charAt(charIndex)
-              if (isQuote(nextChar)) {
-                singleQuote = nextChar === "'"
-                parsing = 'content'
-              } else {
-                parsedText += nextChar
-              }
+          if (isQuote(char) && endQuote(char)) {
+            if (parsedText) {
+              result.attributes[currentAttribute].push(parsedText)
+              currentAttribute = ''
+              parsedText = ''
+            }
+            charIndex = findClosestNonWhitespace(string, ++charIndex)
+            if (charIndex === -1) return result
+            const nextChar = string.charAt(charIndex)
+            if (isQuote(nextChar)) {
+              singleQuote = nextChar === "'"
+              currentState = state.CONTENT
             } else {
-              parsedText += char
+              currentState = state.ATTRIBUTE
+              parsedText += nextChar
             }
             continue
           }
-        } // TODO: This check is to allow boolean attributes: " || char === ' ' || (charIndex === string.length && strings.length === 1)"
-        else if (char === '=' || char === ' ' || (charIndex === string.length && strings.length === 1)) {
-          currentAttribute = parsedText
-          result.attributes[currentAttribute] = []
-          parsedText = ''
-          // TODO: Same, It'll need a refactor
-          if (char === ' ' || (charIndex === string.length && strings.length === 1)) return
-          const nextChar = string.charAt(++charIndex)
-          if (nextChar && isQuote(nextChar)) {
-            singleQuote = nextChar === "'"
-          } else {
-            throw Error(
-              `Invalid char: '${char}' in string: '${string}', at position: ${charIndex}\n${' '.repeat(charIndex + 46) + '^'}`,
-            )
+          parsedText += char
+          break
+
+        case state.CONTENT:
+          if (charIndex === string.length) {
+            if (parsedText) {
+              result.content.push(parsedText)
+              parsedText = ''
+            }
+            result.content.push(interpolations[stringIndex])
+            continue
           }
-          continue
-        }
-        parsedText += char
+          if (isQuote(char) && endQuote(char)) {
+            if (parsedText) result.content.push(parsedText)
+            return result
+          }
+          parsedText += char
+          break
       }
     }
   })
 
   return result
-}
-
-function isQuote(char) {
-  return char === '"' || char === "'"
-}
-
-function isWhitespace(char) {
-  return char === ' ' || char === '\t' || char === '\n' || char === '\r'
-}
-
-function findClosestNonWhitespace(str, index) {
-  while (index < str.length) {
-    if (
-      str[index] !== ' ' &&
-      str[index] !== '\t' &&
-      str[index] !== '\n' &&
-      str[index] !== '\r'
-    )
-      return index
-    index++
-  }
-  return -1
 }

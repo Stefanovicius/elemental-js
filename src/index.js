@@ -1,5 +1,7 @@
 import './index.css'
 
+console.time('index.js ran in')
+
 import { def, el } from './lib/main'
 
 const header = document.querySelector('header')
@@ -61,7 +63,7 @@ main.append(
 )
 
 main.append(
-  el`h3 "🚫 Create an input with multiple attributes"`,
+  el`h3 "Create an input with multiple attributes"`,
   pre('el`input disabled placeholder="Sorry, not allowed..."`'),
   result(),
   el`input disabled placeholder="Sorry, not allowed..."`,
@@ -112,3 +114,5 @@ function counter() {
 }
 
 main.append(el`h3 "Try it"`, pre(el`textarea rows="10"`), el`br`)
+
+console.timeEnd('index.js ran in')
