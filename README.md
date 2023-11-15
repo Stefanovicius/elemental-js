@@ -43,7 +43,6 @@ document.body.append(counter())
 Elemental.js is just at the beginning of its journey, here are the plans for its evolution:
 
 - **Refactoring for Efficiency**: The first version was a thrilling rush of creation. Next, I'm rolling up my sleeves to refactor the code. This will not only make Elemental.js more efficient but also easier to understand and contribute to.
-- **Boolean Attribute Handling**: There's a quirk with boolean attributes in the current version. I'll be fixing it while refactoring the code, though as of now it's better not to use them.
 - **Comprehensive Testing**: Testing is crucial, and it's on my list. I plan to implement a thorough testing process to ensure reliability and stability in every element controlled by Elemental.js.
 - **Documentation Development**: As the library matures, so will its documentation. Detailed guides and examples will be provided, making it easier for users to master Elemental.js and use it to its full potential.
 - **Community Contributions**: Once the foundation is solid, I'll be laying out clear guidelines for contributions. I'm excited to see how fellow developers can add their magic to Elemental.js, enhancing it with their unique ideas and improvements.
