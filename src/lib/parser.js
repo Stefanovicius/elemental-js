@@ -13,11 +13,8 @@ export function parse(strings, interpolations) {
 
   let currentState = state.TAG
   let currentAttribute = null
-  let parsedText = ''
   let singleQuote = false
-
-  const endQuote = (char) =>
-    (singleQuote && char === "'") || (!singleQuote && char === '"')
+  let buffer = ''
 
   const result = {
     tag: '',
@@ -25,48 +22,56 @@ export function parse(strings, interpolations) {
     content: [],
   }
 
-  strings.forEach((string, stringIndex) => {
+  const clearBuffer = () => (buffer = '')
+  const pushToBuffer = (char) => (buffer += char)
 
+  const endQuote = (char) =>
+    (singleQuote && char === "'") || (!singleQuote && char === '"')
+
+  strings.forEach((string, stringIndex) => {
     let charIndex = stringIndex === 0 ? tagIndex : 0
     const endIndex = string.length
 
     const switchState = () => {
-      charIndex = getNonWhitespaceIndex(string, charIndex)
-      if (charIndex === -1) return result
-      const nextChar = string.charAt(charIndex)
+      const newIndex = getNonWhitespaceIndex(string, charIndex)
+      if (newIndex === -1) return result
+      const nextChar = string.charAt(newIndex)
       if (isQuote(nextChar)) {
         currentState = state.CONTENT
         singleQuote = nextChar === "'"
       } else {
         currentState = state.ATTRIBUTE
-        parsedText += nextChar
+        pushToBuffer(nextChar)
       }
+      charIndex = newIndex
     }
 
     for (; charIndex <= endIndex; charIndex++) {
       const char = string.charAt(charIndex)
 
       switch (currentState) {
+        
         case state.TAG:
-          const setTag = () => result.tag = parsedText
+          const setTag = () => (result.tag = buffer)
+
           if (charIndex === endIndex) {
             setTag()
             return result
           }
           if (isWhitespace(char)) {
             setTag()
-            parsedText = ''
+            clearBuffer()
             switchState()
             continue
           }
-          parsedText += char
+          pushToBuffer(char)
           break
 
         case state.ATTRIBUTE:
           const setAttribute = (isBoolean) => {
-            currentAttribute = parsedText
+            currentAttribute = buffer
             result.attributes[currentAttribute] = isBoolean ? [isBoolean] : []
-            parsedText = ''
+            clearBuffer()
           }
           if (char === '=') {
             setAttribute()
@@ -87,14 +92,14 @@ export function parse(strings, interpolations) {
             switchState()
             continue
           }
-          parsedText += char
+          pushToBuffer(char)
           break
 
         case state.ATTRIBUTE_VALUE:
           const attributeValuePush = (resetAttribute = false) => {
-            if (parsedText) {
-              result.attributes[currentAttribute].push(parsedText)
-              parsedText = ''
+            if (buffer) {
+              result.attributes[currentAttribute].push(buffer)
+              clearBuffer()
               resetAttribute && (currentAttribute = '')
             }
           }
@@ -107,35 +112,27 @@ export function parse(strings, interpolations) {
           }
           if (isQuote(char) && endQuote(char)) {
             attributeValuePush(true)
-            charIndex = getNonWhitespaceIndex(string, ++charIndex)
-            if (charIndex === -1) return result
-            const nextChar = string.charAt(charIndex)
-            if (isQuote(nextChar)) {
-              currentState = state.CONTENT
-              singleQuote = nextChar === "'"
-            } else {
-              currentState = state.ATTRIBUTE
-              parsedText += nextChar
-            }
+            charIndex++
+            switchState()
             continue
           }
-          parsedText += char
+          pushToBuffer(char)
           break
 
         case state.CONTENT:
           if (charIndex === string.length) {
-            if (parsedText) {
-              result.content.push(parsedText)
-              parsedText = ''
+            if (buffer) {
+              result.content.push(buffer)
+              clearBuffer()
             }
             result.content.push(interpolations[stringIndex])
             continue
           }
           if (isQuote(char) && endQuote(char)) {
-            if (parsedText) result.content.push(parsedText)
+            if (buffer) result.content.push(buffer)
             return result
           }
-          parsedText += char
+          pushToBuffer(char)
           break
       }
     }
