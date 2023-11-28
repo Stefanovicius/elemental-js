@@ -14,3 +14,7 @@ export function getNonWhitespaceIndex(str, i) {
   }
   return -1
 }
+
+export function isBool(value) {
+  return typeof value === 'boolean'
+}
