@@ -8,11 +8,9 @@ const header = document.querySelector('header')
 
 const logo = () => {
   const colors = ['red', 'green', 'blue', 'gray']
-  return el`h1
-    style="margin-bottom: -.2em"
-    "${'Elemental.js'
-      .split('')
-      .map((char, i) => el`i style='color: ${colors[i % 4]}' '${char}'`)}"
+  return el`h1 style="margin-bottom: -.2em" "${'Elemental.js'
+    .split('')
+    .map((char, i) => el`i style='color: ${colors[i % 4]}' '${char}'`)}"
   `
 }
 
@@ -23,68 +21,57 @@ header.append(
 
 const main = document.querySelector('main')
 
-const code = (input) => el`code class="language-js" "${input}"`
-const pre = (input) => el`pre "${code(input)}"`
-const result = () =>
-  el`h4 style="display: inline; padding-right: 1em" "Result:"`
+const pre = (input) => el`pre "${el`code class="language-js" "${input}"`}"`
 
 main.append(
+  el`br`,
   el`h3 "Install and import the function"`,
   pre('npm i elemental-js'),
   pre("import { el } from 'elemental-js'"),
   el`br`,
 )
 
-main.append(
-  el`h3 "Create an input element"`,
-  pre('el`input`'),
-  result(),
-  el`input`,
-  el`br`,
-  el`br`,
-)
+const section = (title, code, component = '') => {
+  !Array.isArray(code) && (code = [code])
+  main.append(
+    el`h3 "${title}"`,
+    ...code.map((code) => pre(code)),
+    el`div style="display: flex; gap: 1em" "${el`h4 style="margin-block-start: 1em; margin-block-end: 1em" "Result:"`}${component}"`,
+    el`br`,
+    el`br`,
+  )
+}
 
-main.append(
-  el`h3 "Create an input with a boolean attribute"`,
-  pre('el`input disabled`'),
-  result(),
+section('Create an input element', 'el`input`', el`input`)
+
+section(
+  'Create an input with a boolean attribute',
+  'el`input disabled`',
   el`input disabled`,
-  el`br`,
-  el`br`,
 )
 
-main.append(
-  el`h3 "Create an input with a non-boolean attribute"`,
-  pre('el`input placeholder="Enter something..."`'),
-  result(),
+section(
+  'Create an input with a non-boolean attribute',
+  'el`input placeholder="Enter something..."`',
   el`input placeholder="Enter something..."`,
-  el`br`,
-  el`br`,
 )
 
-main.append(
-  el`h3 "Create an input with multiple attributes"`,
-  pre('el`input disabled placeholder="Sorry, not allowed..."`'),
-  result(),
+section(
+  'Create an input with multiple attributes',
+  'el`input disabled placeholder="Sorry, not allowed..."`',
   el`input disabled placeholder="Sorry, not allowed..."`,
-  el`br`,
-  el`br`,
 )
 
-main.append(
-  el`h3 "Create a paragraph"`,
-  pre('el`p "Lorem ipsum dolor sit amet"`'),
-  result(),
+section(
+  'Create a paragraph',
+  'el`p "Lorem ipsum dolor sit amet"`',
   el`p "Lorem ipsum dolor sit amet"`,
-  el`br`,
 )
 
-main.append(
-  el`h3 "Create a crimson paragraph"`,
-  pre('el`p style="color: crimson" "Lorem ipsum dolor sit amet"`'),
-  result(),
+section(
+  'Create a crimson paragraph',
+  'el`p style="color: crimson" "Lorem ipsum dolor sit amet"`',
   el`p style="color: crimson" "Lorem ipsum dolor sit amet"`,
-  el`br`,
 )
 
 main.append(
@@ -94,25 +81,162 @@ import { def, el } from 'elemental-js'`),
   el`br`,
 )
 
-main.append(
-  el`h3 "Create a counter"`,
-  pre(`const counter = () => {
-  const count = def(0)
-  const increment = () => ++count.val
-  return el\`button onclick="\${increment}" "Count is: \${count}"\`
-}`),
-  result(),
-  counter(),
-  el`br`,
-  el`br`,
-)
-
-function counter() {
+const counter = () => {
   const count = def(0)
   const increment = () => ++count.val
   return el`button onclick="${increment}" "Count is: ${count}"`
 }
 
-main.append(el`h3 "Try it"`, pre(el`textarea rows="10"`), el`br`)
+section(
+  'Create a counter',
+  `const counter = () => {
+  const count = def(0)
+  const increment = () => ++count.val
+  return el\`button onclick="\${increment}" "Count is: \${count}"\`
+}`,
+  counter(),
+)
+
+const input = () => {
+  const value = def('')
+  const disabled = def(false, enableButton)
+  const input = el`input
+    placeholder="Color or 'disabled'"
+    onkeyup="${handleInputKeyup}"
+    style="color: ${value}"
+    disabled="${disabled}"
+  `
+  function handleInputKeyup({ target }) {
+    target.value === 'disabled'
+      ? (disabled.val = true)
+      : (value.val = target.value)
+  }
+  function enableButton(val) {
+    const handleClick = () => ((disabled.val = false), input.focus())
+    if (val) return el`button onclick="${handleClick}" "Enable"`
+  }
+  return el`div "${input}${disabled}"`
+}
+
+section(
+  'A more elaborate input',
+  `const input = () => {
+  const value = def('')
+  const disabled = def(false, enableButton)
+  const input = el\`input
+    placeholder="Color or 'disabled'"
+    onkeyup="\${handleInputKeyup}"
+    style="color: \${value}"
+    disabled="\${disabled}"
+  \`
+  function handleInputKeyup({ target }) {
+    target.value === 'disabled'
+      ? (disabled.val = true)
+      : (value.val = target.value)
+  }
+  function enableButton(val) {
+    const handleClick = () => ((disabled.val = false), input.focus())
+    if (val) return el\`button onclick="\${handleClick}" "Enable"\`
+  }
+  return el\`div "\${input}\${disabled}"\`
+}`,
+  input(),
+)
+
+const todos = () => {
+  const storedList = loadList()
+  const taskList = def(storedList, (item) => {
+    if (item.hidden) return false
+    const handleChange = ({ target }) => (
+      (item.done = target.checked), saveList()
+    )
+    const checkbox = el`input
+      type="checkbox"
+      checked="${item.done}"
+      onchange="${handleChange}"
+      style="margin-right: 1ch"
+    `
+    return el`li "${[checkbox, item.value]}"`
+  })
+  const handleKeyup = (e) => e.key === 'Enter' && addItem()
+  const taskInput = el`input onkeyup="${handleKeyup}" placeholder="Enter a task..."`
+  const addTaskButton = el`button onclick="${addItem}" "Add todo"`
+  const clearDoneButton = el`button onclick="${clearDone}" "Clear Done"`
+  return el`div "${[
+    taskInput,
+    addTaskButton,
+    el`ul style="list-style: none; padding-inline-start: 0; margin-block: 0" "${taskList}"`,
+    clearDoneButton,
+  ]}"`
+  function addItem() {
+    if (taskInput.value === '') return
+    taskList.push({
+      value: taskInput.value,
+      done: false,
+    })
+    saveList()
+    taskInput.value = ''
+  }
+  function clearDone() {
+    taskList.val = taskList.filter(({ done }) => !done)
+    saveList()
+  }
+  function loadList() {
+    return JSON.parse(localStorage.getItem('todos') || '[]')
+  }
+  function saveList() {
+    localStorage.setItem('todos', JSON.stringify(taskList.val))
+  }
+}
+
+section(
+  'A todo app',
+  `const todos = () => {
+  const storedList = loadList()
+  const taskList = def(storedList, (item) => {
+    if (item.hidden) return false
+    const handleChange = ({ target }) => (
+      (item.done = target.checked), saveList()
+    )
+    const checkbox = el\`input
+      type="checkbox"
+      checked="\${item.done}"
+      onchange="\${handleChange}"
+      style="margin-right: 1ch"
+    \`
+    return el\`li "\${[checkbox, item.value]}"\`
+  })
+  const handleKeyup = (e) => e.key === 'Enter' && addItem()
+  const taskInput = el\`input onkeyup="\${handleKeyup}" placeholder="Enter a task..."\`
+  const addTaskButton = el\`button onclick="\${addItem}" "Add todo"\`
+  const clearDoneButton = el\`button onclick="\${clearDone}" "Clear Done"\`
+  return el\`div "\${[
+    taskInput,
+    addTaskButton,
+    el\`ul style="list-style: none; padding-left: 0" "\${taskList}"\`,
+    clearDoneButton,
+  ]}"\`
+  function addItem() {
+    if (taskInput.value === '') return
+    taskList.push({
+      value: taskInput.value,
+      done: false,
+    })
+    saveList()
+    taskInput.value = ''
+  }
+  function clearDone() {
+    taskList.val = taskList.filter(({ done }) => !done)
+    saveList()
+  }
+  function loadList() {
+    return JSON.parse(localStorage.getItem('todos') || '[]')
+  }
+  function saveList() {
+    localStorage.setItem('todos', JSON.stringify(taskList.val))
+  }
+}`,
+  todos(),
+)
 
 console.timeEnd('index.js ran in')

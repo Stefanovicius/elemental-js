@@ -26,7 +26,15 @@ main {
 footer {
   padding-block: 1rem;
   margin-top: auto;
-  text-align: right;
+  text-align: center;
+}
+
+a {
+  color: brown;
+}
+
+a:not(:hover) {
+  text-decoration: none;
 }
 
 h3, h4 {
@@ -58,8 +66,8 @@ input:disabled {
   cursor: not-allowed;
 }
 
-p {
-  display: inline-block;
+input + button {
+  margin-left: .5em;
 }
 
 button {
