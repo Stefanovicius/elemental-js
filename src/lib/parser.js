@@ -103,7 +103,7 @@ export function parse(strings, interpolations) {
               resetAttribute && (currentAttribute = '')
             }
           }
-          if (charIndex === endIndex) {
+          if (currentAttribute && charIndex === endIndex) {
             attributeValuePush()
             result.attributes[currentAttribute].push(
               interpolations[stringIndex],
