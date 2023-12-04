@@ -10,6 +10,7 @@ export class Reactive {
     return this.#value
   }
   set val(value) {
+    if (this.#value === value) return
     this.#value = value
     this.#subscribers.forEach((updater) => updater(this.val))
   }
