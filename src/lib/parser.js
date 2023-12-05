@@ -12,7 +12,7 @@ export function parse(strings, interpolations) {
   if (tagIndex === -1) throw Error('Tag is not defined')
 
   let currentState = state.TAG
-  let currentAttribute = null
+  let currentAttributeKey = ''
   let singleQuote = false
   let buffer = ''
 
@@ -24,9 +24,10 @@ export function parse(strings, interpolations) {
 
   const clearBuffer = () => (buffer = '')
   const pushToBuffer = (char) => (buffer += char)
+  const clearCurrentAttributeKey = () => (currentAttributeKey = '')
 
   const endQuote = (char) =>
-    (singleQuote && char === "'") || (!singleQuote && char === '"')
+    singleQuote ? char === "'" : char === '"'
 
   strings.forEach((string, stringIndex) => {
     let charIndex = stringIndex === 0 ? tagIndex : 0
@@ -48,19 +49,18 @@ export function parse(strings, interpolations) {
 
     for (; charIndex <= endIndex; charIndex++) {
       const char = string.charAt(charIndex)
+      const theEnd = charIndex === endIndex
 
       switch (currentState) {
         
         case state.TAG:
-          const setTag = () => (result.tag = buffer)
-
-          if (charIndex === endIndex) {
-            setTag()
-            return result
-          }
-          if (isWhitespace(char)) {
-            setTag()
+          const setTag = () => {
+            result.tag = buffer
             clearBuffer()
+          }
+          if (theEnd || isWhitespace(char)) {
+            setTag()
+            if (theEnd) return result
             switchState()
             continue
           }
@@ -69,8 +69,8 @@ export function parse(strings, interpolations) {
 
         case state.ATTRIBUTE:
           const setAttribute = (isBoolean) => {
-            currentAttribute = buffer
-            result.attributes[currentAttribute] = isBoolean ? [isBoolean] : []
+            currentAttributeKey = buffer
+            result.attributes[currentAttributeKey] = isBoolean ? [isBoolean] : []
             clearBuffer()
           }
           if (char === '=') {
@@ -82,10 +82,9 @@ export function parse(strings, interpolations) {
               continue
             }
             throw Error(
-              `No opening quote, reading attribute: '${currentAttribute}'`,
+              `No opening quote, reading attribute: '${currentAttributeKey}'`,
             )
           }
-          const theEnd = charIndex === endIndex
           if (theEnd || isWhitespace(char)) {
             setAttribute(true)
             if (theEnd) return result
@@ -96,31 +95,31 @@ export function parse(strings, interpolations) {
           break
 
         case state.ATTRIBUTE_VALUE:
-          const attributeValuePush = (resetAttribute = false) => {
+          const attributeValuePush = () => {
             if (buffer) {
-              result.attributes[currentAttribute].push(buffer)
+              result.attributes[currentAttributeKey].push(buffer)
               clearBuffer()
-              resetAttribute && (currentAttribute = '')
             }
           }
-          if (currentAttribute && charIndex === endIndex) {
-            attributeValuePush()
-            result.attributes[currentAttribute].push(
-              interpolations[stringIndex],
-            )
-            continue
-          }
           if (isQuote(char) && endQuote(char)) {
-            attributeValuePush(true)
+            attributeValuePush()
+            clearCurrentAttributeKey()
             charIndex++
             switchState()
+            continue
+          }
+          if (theEnd && currentAttributeKey) {
+            attributeValuePush()
+            result.attributes[currentAttributeKey].push(
+              interpolations[stringIndex],
+            )
             continue
           }
           pushToBuffer(char)
           break
 
         case state.CONTENT:
-          if (charIndex === string.length) {
+          if (theEnd) {
             if (buffer) {
               result.content.push(buffer)
               clearBuffer()
