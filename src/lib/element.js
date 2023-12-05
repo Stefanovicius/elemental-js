@@ -1,18 +1,19 @@
 import { Reactive } from './reactive'
 import { isBool } from './utilities'
 
+const isReactive = (val) => val instanceof Reactive
+const getComputedValue = (val) => (isReactive(val) ? val.value : val)
+
 const handleEventListeners = (element, event, listeners) => {
   listeners.forEach((callback) => element.addEventListener(event, callback))
 }
 
 const handleAttribute = (element, attribute, valueArr) => {
   const computeAttributeValue = () => {
-    const firstValue = valueArr[0]
-    const firstValueIsReactive = firstValue instanceof Reactive
-    if (isBool(firstValue) || (firstValueIsReactive && isBool(firstValue.val)))
-      return firstValueIsReactive ? firstValue.val : firstValue
-    else
-      return valueArr.map((v) => (v instanceof Reactive ? v.val : v)).join('')
+    const firstValue = getComputedValue(valueArr[0])
+    return isBool(firstValue)
+      ? firstValue
+      : valueArr.map((value) => getComputedValue(value)).join('')
   }
   const updateAttribute = () => {
     const value = computeAttributeValue()
@@ -23,7 +24,7 @@ const handleAttribute = (element, attribute, valueArr) => {
   }
   updateAttribute()
   valueArr.forEach((value) => {
-    if (value instanceof Reactive) {
+    if (isReactive(value)) {
       value.subscription(updateAttribute)
     }
   })
@@ -37,21 +38,40 @@ const handleAttributes = (element, attributes) => {
   })
 }
 
-const handleContent = (element, contentArr) => {
-  const updateContent = () => {
-    element.replaceChildren()
-    contentArr.forEach((content) => {
-      const isReactive = content instanceof Reactive
-      const value = isReactive ? content.render() : content
-      if (Array.isArray(content) || (isReactive && Array.isArray(content.val)))
-        element.append(...value)
-      else element.append(value)
-    })
+const processContent = (content) => {
+  if (isReactive(content)) return processContent(content.value)
+  if (Array.isArray(content)) return content.flatMap(processContent)
+  if (content instanceof Node) return content
+  return document.createTextNode(content)
+}
+
+const elementsEqual = (a, b) => {
+  if (typeof a === 'string' && typeof b === 'string') return a === b
+  if (a instanceof HTMLElement && b instanceof HTMLElement)
+    return a.outerHTML === b.outerHTML
+  return false
+}
+
+const updateContent = (element, contentArr) => {
+  const newContent = contentArr.flatMap(processContent)
+  newContent.forEach((newChild, index) => {
+    const existingChild = element.childNodes[index]
+    if (!existingChild) {
+      element.appendChild(newChild)
+    } else if (!elementsEqual(newChild, existingChild)) {
+      element.replaceChild(newChild, existingChild)
+    }
+  })
+  while (element.childNodes.length > newContent.length) {
+    element.removeChild(element.lastChild)
   }
-  updateContent()
+}
+
+const handleContent = (element, contentArr) => {
+  updateContent(element, contentArr)
   contentArr.forEach((content) => {
-    if (content instanceof Reactive) {
-      content.subscription(updateContent)
+    if (isReactive(content)) {
+      content.subscription(() => updateContent(element, contentArr))
     }
   })
 }

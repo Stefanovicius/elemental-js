@@ -12,14 +12,14 @@ const extendDef = (typeCheck, reactiveClass) =>
 
 /**
  * Creates an instance of a Reactive class to be used in an `el` template
- * @param {Function} renderMethod
- * @returns {Reactive}
+ * @param  {Function[]} derivatives 
+ * @returns 
  */
-function def(initialValue, renderMethod) {
+function def(initialValue, ...derivatives) {
   const ReactiveClass =
     elementalTypes.find(({ typeCheck }) => typeCheck(initialValue))
       ?.extendedReactive || Reactive
-  return new ReactiveClass(initialValue, renderMethod)
+  return new ReactiveClass(initialValue, ...derivatives)
 }
 
 /**
