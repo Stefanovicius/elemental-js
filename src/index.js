@@ -85,7 +85,7 @@ import { def, el } from 'elemental-js'`),
 const counter = () => {
   const count = def(0)
   const increment = () => ++count.value
-  return el`button onclick="${increment}" "Count is: ${count}"`
+  return el`button onclick=${increment} "Count is: ${count}"`
 }
 
 section(
@@ -93,7 +93,7 @@ section(
   `const counter = () => {
   const count = def(0)
   const increment = () => ++count.value
-  return el\`button onclick="\${increment}" "Count is: \${count}"\`
+  return el\`button onclick=\${increment} "Count is: \${count}"\`
 }`,
   counter()
 )

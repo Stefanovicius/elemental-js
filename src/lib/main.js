@@ -33,4 +33,11 @@ function el(strings, ...interpolations) {
   return createElement(ast)
 }
 
-export { extendDef, def, arr, el }
+/**
+ * Returns the first element that is a descendant of node that matches selectors. An alias of `document.querySelector`
+ * @param {keyof HTMLElementTagNameMap} selectors 
+ * @returns {HTMLElement | null}
+ */
+const sel = (selectors) => document.querySelector(selectors)
+
+export { extendDef, def, arr, el, sel }

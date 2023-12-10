@@ -1,138 +1,124 @@
-import { isQuote, isWhitespace, getNonWhitespaceIndex } from './utilities'
+import { isQuote, isWhitespace, isAlphabetic } from './utilities'
 
-const state = {
+const State = {
   TAG: 0,
-  ATTRIBUTE: 1,
-  ATTRIBUTE_VALUE: 2,
-  CONTENT: 3,
+  WHITESPACE: 1,
+  ATTRIBUTE: 2,
+  ATTRIBUTE_VALUE: 3,
+  CONTENT: 4
 }
 
 export function parse(strings, interpolations) {
-  const tagIndex = getNonWhitespaceIndex(strings[0], 0)
-  if (tagIndex === -1) throw Error('Tag is not defined')
-
-  let currentState = state.TAG
-  let currentAttributeKey = ''
+  let state = State.TAG
   let singleQuote = false
+  let attribute = ''
   let buffer = ''
 
   const result = {
     tag: '',
     attributes: {},
-    content: [],
+    content: []
   }
 
-  const clearBuffer = () => (buffer = '')
-  const pushToBuffer = (char) => (buffer += char)
-  const clearCurrentAttributeKey = () => (currentAttributeKey = '')
-
-  const endQuote = (char) =>
-    singleQuote ? char === "'" : char === '"'
+  const setTag = () => {
+    result.tag = buffer
+    buffer = ''
+  }
+  const addAttribute = () => {
+    result.attributes[buffer] = []
+    attribute = buffer
+    buffer = ''
+  }
+  const attributePushValue = (value) => {
+    result.attributes[attribute].push(value)
+  }
+  const isEndQuote = (char) => {
+    return singleQuote ? char === "'" : char === '"'
+  }
 
   strings.forEach((string, stringIndex) => {
-    let charIndex = stringIndex === 0 ? tagIndex : 0
     const endIndex = string.length
 
-    const switchState = () => {
-      const newIndex = getNonWhitespaceIndex(string, charIndex)
-      if (newIndex === -1) return result
-      const nextChar = string.charAt(newIndex)
-      if (isQuote(nextChar)) {
-        currentState = state.CONTENT
-        singleQuote = nextChar === "'"
-      } else {
-        currentState = state.ATTRIBUTE
-        pushToBuffer(nextChar)
-      }
-      charIndex = newIndex
-    }
-
-    for (; charIndex <= endIndex; charIndex++) {
+    for (let charIndex = 0; charIndex <= endIndex; charIndex++) {
+      const endOfString = charIndex === endIndex
       const char = string.charAt(charIndex)
-      const theEnd = charIndex === endIndex
 
-      switch (currentState) {
-        
-        case state.TAG:
-          const setTag = () => {
-            result.tag = buffer
-            clearBuffer()
-          }
-          if (theEnd || isWhitespace(char)) {
+      switch (state) {
+        case State.TAG:
+          if (isWhitespace(char)) {
+            if (buffer === '') continue
             setTag()
-            if (theEnd) return result
-            switchState()
+            state = State.WHITESPACE
             continue
           }
-          pushToBuffer(char)
-          break
-
-        case state.ATTRIBUTE:
-          const setAttribute = (isBoolean) => {
-            currentAttributeKey = buffer
-            result.attributes[currentAttributeKey] = isBoolean ? [isBoolean] : []
-            clearBuffer()
-          }
-          if (char === '=') {
-            setAttribute()
-            const nextChar = string.charAt(++charIndex)
-            if (isQuote(nextChar)) {
-              singleQuote = nextChar === "'"
-              currentState = state.ATTRIBUTE_VALUE
-              continue
-            }
-            throw Error(
-              `No opening quote, reading attribute: '${currentAttributeKey}'`,
-            )
-          }
-          if (theEnd || isWhitespace(char)) {
-            setAttribute(true)
-            if (theEnd) return result
-            switchState()
-            continue
-          }
-          pushToBuffer(char)
-          break
-
-        case state.ATTRIBUTE_VALUE:
-          const attributeValuePush = () => {
-            if (buffer) {
-              result.attributes[currentAttributeKey].push(buffer)
-              clearBuffer()
-            }
-          }
-          if (isQuote(char) && endQuote(char)) {
-            attributeValuePush()
-            clearCurrentAttributeKey()
-            charIndex++
-            switchState()
-            continue
-          }
-          if (theEnd && currentAttributeKey) {
-            attributeValuePush()
-            result.attributes[currentAttributeKey].push(
-              interpolations[stringIndex],
-            )
-            continue
-          }
-          pushToBuffer(char)
-          break
-
-        case state.CONTENT:
-          if (theEnd) {
-            if (buffer) {
-              result.content.push(buffer)
-              clearBuffer()
-            }
-            result.content.push(interpolations[stringIndex])
-            continue
-          }
-          if (isQuote(char) && endQuote(char)) {
-            if (buffer) result.content.push(buffer)
+          if (endOfString) {
+            if (buffer === '') throw Error(`Tag is not defined`)
+            setTag()
             return result
           }
-          pushToBuffer(char)
-          break
+          buffer += char
+          continue
+
+        case State.WHITESPACE:
+          if (isAlphabetic(char)) {
+            buffer += char
+            state = State.ATTRIBUTE
+          } else if (isQuote(char)) {
+            singleQuote = char === "'"
+            state = State.CONTENT
+          }
+          continue
+
+        case State.ATTRIBUTE:
+          if (endOfString || isWhitespace(char)) {
+            addAttribute()
+            attributePushValue(true)
+            if (endOfString) return result
+            state = State.WHITESPACE
+            continue
+          }
+          if (char === '=') {
+            addAttribute()
+            const nextIndex = charIndex + 1
+            const nextChar = string.charAt(nextIndex)
+            if (isQuote(nextChar)) {
+              charIndex = nextIndex
+              singleQuote = nextChar === "'"
+              state = State.ATTRIBUTE_VALUE
+            } else {
+              attributePushValue(interpolations[stringIndex])
+              state = State.WHITESPACE
+            }
+            continue
+          }
+          buffer += char
+          continue
+
+        case State.ATTRIBUTE_VALUE:
+          if (endOfString || isEndQuote(char)) {
+            if (buffer) {
+              attributePushValue(buffer)
+              buffer = ''
+            }
+            if (endOfString) attributePushValue(interpolations[stringIndex])
+            else state = State.WHITESPACE
+            continue
+          }
+          buffer += char
+          continue
+
+        case State.CONTENT:
+          if (endOfString || isEndQuote(char)) {
+            if (buffer) {
+              result.content.push(buffer)
+              buffer = ''
+            }
+            if (endOfString) result.content.push(interpolations[stringIndex])
+            else state = State.WHITESPACE
+            continue
+          }
+          buffer += char
+          continue
       }
     }
   })

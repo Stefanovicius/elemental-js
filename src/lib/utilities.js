@@ -6,13 +6,12 @@ export function isWhitespace(char) {
   return char === ' ' || char === '\t' || char === '\n' || char === '\r'
 }
 
-export function getNonWhitespaceIndex(str, i) {
-  while (i < str.length) {
-    if (str[i] !== ' ' && str[i] !== '\t' && str[i] !== '\n' && str[i] !== '\r')
-      return i
-    i++
-  }
-  return -1
+export function isAlphabetic(char) {
+  const charCode = char.charCodeAt(0)
+  return (
+    (charCode >= 65 && charCode <= 90) || // Uppercase letters
+    (charCode >= 97 && charCode <= 122) // Lowercase letters
+  )
 }
 
 export function isBool(value) {
