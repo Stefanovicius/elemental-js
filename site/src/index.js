@@ -1,9 +1,7 @@
 import './index.css'
+import './prism.css'
 
-const { log } = console
-const startTime = performance.now()
-
-import { def, el } from './lib/main'
+import { def, el } from 'elemental-js'
 
 const header = document.querySelector('header')
 
@@ -304,9 +302,4 @@ section(
   mousePosition()
 )
 
-const endTime = performance.now() - startTime
-const averageTimeStorageName = 'average_generation_time'
-const averageTime = parseFloat(localStorage.getItem(averageTimeStorageName) ?? 0)
-const newAverageTime = ((averageTime + endTime) / 2).toFixed(0)
-localStorage.setItem(averageTimeStorageName, newAverageTime)
-log(`index.js ran in: ${endTime}ms, average time: ${newAverageTime}ms`)
+import './prism.js'
