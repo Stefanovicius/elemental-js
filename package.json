@@ -1,7 +1,7 @@
 {
   "name": "elemental-js",
   "private": true,
-  "version": "1.0.0-beta.4",
+  "version": "0.9.0",
   "author": "Adomas Stefanovičius",
   "license": "MIT",
   "type": "module",
