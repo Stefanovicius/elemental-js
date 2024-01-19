@@ -1,7 +1,9 @@
 import './index.css'
 import './prism.css'
 
-import { def, el } from 'elemental-js'
+const start = performance.now()
+
+import { def, el } from '../../lib/src/main.js'
 
 const header = document.querySelector('header')
 
@@ -82,7 +84,7 @@ import { def, el } from 'elemental-js'`),
 
 const counter = () => {
   const count = def(0)
-  const increment = () => ++count.value
+  const increment = () => ++count.val
   return el`button onclick=${increment} "Count is: ${count}"`
 }
 
@@ -90,35 +92,11 @@ section(
   'Create a counter',
   `const counter = () => {
   const count = def(0)
-  const increment = () => ++count.value
+  const increment = () => ++count.val
   return el\`button onclick=\${increment} "Count is: \${count}"\`
 }`,
   counter()
 )
-
-const input = () => {
-  const value = def('')
-  const disabled = def(false)
-
-  const handleKeyup = ({ target }) =>
-    target.value === 'disabled'
-      ? (disabled.value = true)
-      : (value.value = target.value)
-
-  const input = el`input
-    placeholder="Color or 'disabled'"
-    onkeyup="${handleKeyup}"
-    style="color: ${value}"
-    disabled="${disabled}"
-  `
-  const enableButton = disabled.derive((val) => {
-    if (!val) return ''
-    const handleClick = () => ((disabled.value = false), input.focus())
-    return el`button onclick="${handleClick}" "Enable"`
-  })
-
-  return el`div "${input}${enableButton}"`
-}
 
 section(
   'A more elaborate input',
@@ -128,9 +106,9 @@ section(
   const disabled = def(false)
 
   const handleKeyup = ({ target }) =>
-    target.value === 'disabled'
-      ? (disabled.value = true)
-      : (value.value = target.value)
+    target.val === 'disabled'
+      ? (disabled.val = true)
+      : (value.val = target.val)
 
   const input = el\`input
     placeholder="Color or 'disabled'"
@@ -140,7 +118,7 @@ section(
   \`
   const enableButton = disabled.derive((val) => {
     if (!val) return ''
-    const handleClick = () => ((disabled.value = false), input.focus())
+    const handleClick = () => ((disabled.val = false), input.focus())
     return el\`button onclick="\${handleClick}" "Enable"\`
   })
 
@@ -149,18 +127,92 @@ section(
   input()
 )
 
-const thousandObjects = []
+function input() {
+  const value = def('')
+  const disabled = def(false)
 
-for (let i = 0; i < 10; i++) {
-  const object = {
-    value: `No. ${i}`,
-    done: false
-  }
+  const handleKeyup = ({ target }) =>{
+    target.value === 'disabled'
+      ? (disabled.val = true)
+      : (value.val = target.value)
+}
+  const input = el`input
+    placeholder="Color or 'disabled'"
+    onkeyup="${handleKeyup}"
+    style="color: ${value}"
+    disabled="${disabled}"
+  `
+  const enableButton = disabled.derive((val) => {
+    if (!val) return ''
+    const handleClick = () => ((disabled.val = false), input.focus())
+    return el`button onclick="${handleClick}" "Enable"`
+  })
 
-  thousandObjects.push(object)
+  return el`div "${input}${enableButton}"`
 }
 
-const todos = () => {
+section(
+  'A todo app',
+  `const todos = () => {
+
+  const taskList = def(loadList())
+
+  const taskElements = taskList.derive(
+    (list) => list.map(item => {
+      if (item.hidden) return ''
+      const handleChange = ({ target }) => (
+        (item.done = target.checked), saveList()
+      )
+      const checkbox = el\`input
+        type="checkbox"
+        style="margin-right: 1ch"
+        checked="\${item.done}"
+        onchange="\${handleChange}"
+      \`
+      return el\`li "\${checkbox}\${item.val}"\`
+    })
+  )
+
+  const handleKeyup = (e) => e.key === 'Enter' && addItem()
+  const taskInput = el\`input onkeyup="\${handleKeyup}" placeholder="Enter a task..."\`
+
+  const addTaskButton = el\`button onclick="\${addItem}" "Add todo"\`
+  const clearDoneButton = el\`button onclick="\${clearDone}" "Clear Done"\`
+
+  return el\`div "\${[
+    taskInput,
+    addTaskButton,
+    el\`ul style="list-style: none; padding-inline-start: 0; margin-block: 0" "\${taskElements}"\`,
+    clearDoneButton
+  ]}"\`
+
+  function addItem() {
+    if (taskInput.val === '') return
+    taskList.push({
+      value: taskInput.val,
+      done: false
+    })
+    saveList()
+    taskInput.val = ''
+  }
+
+  function clearDone() {
+    taskList.val = taskList.filter(({ done }) => !done)
+    saveList()
+  }
+
+  function loadList() {
+    return JSON.parse(localStorage.getItem('todos') || '[]')
+  }
+  
+  function saveList() {
+    localStorage.setItem('todos', JSON.stringify(taskList.val))
+  }
+}`,
+  toDos()
+)
+
+function toDos() {
   const taskList = def(loadList())
 
   const taskElements = taskList.derive((list) =>
@@ -193,7 +245,7 @@ const todos = () => {
   ]}"`
 
   function addItem() {
-    if (taskInput.value === '') return
+    if (taskInput.value === '') return alert('Please enter a task')
     taskList.push({
       value: taskInput.value,
       done: false
@@ -203,89 +255,17 @@ const todos = () => {
   }
 
   function clearDone() {
-    taskList.value = taskList.filter(({ done }) => !done)
-    saveList()
-  }
-
-  function loadList() {
-    // return thousandObjects
-    return JSON.parse(localStorage.getItem('todos') || '[]')
-  }
-
-  function saveList() {
-    localStorage.setItem('todos', JSON.stringify(taskList.value))
-  }
-}
-
-section(
-  'A todo app',
-  `const todos = () => {
-
-  const taskList = def(loadList())
-
-  const taskElements = taskList.derive(
-    (list) => list.map(item => {
-      if (item.hidden) return ''
-      const handleChange = ({ target }) => (
-        (item.done = target.checked), saveList()
-      )
-      const checkbox = el\`input
-        type="checkbox"
-        style="margin-right: 1ch"
-        checked="\${item.done}"
-        onchange="\${handleChange}"
-      \`
-      return el\`li "\${checkbox}\${item.value}"\`
-    })
-  )
-
-  const handleKeyup = (e) => e.key === 'Enter' && addItem()
-  const taskInput = el\`input onkeyup="\${handleKeyup}" placeholder="Enter a task..."\`
-
-  const addTaskButton = el\`button onclick="\${addItem}" "Add todo"\`
-  const clearDoneButton = el\`button onclick="\${clearDone}" "Clear Done"\`
-
-  return el\`div "\${[
-    taskInput,
-    addTaskButton,
-    el\`ul style="list-style: none; padding-inline-start: 0; margin-block: 0" "\${taskElements}"\`,
-    clearDoneButton
-  ]}"\`
-
-  function addItem() {
-    if (taskInput.value === '') return
-    taskList.push({
-      value: taskInput.value,
-      done: false
-    })
-    saveList()
-    taskInput.value = ''
-  }
-
-  function clearDone() {
-    taskList.value = taskList.filter(({ done }) => !done)
+    taskList.val = taskList.filter(({ done }) => !done)
     saveList()
   }
 
   function loadList() {
     return JSON.parse(localStorage.getItem('todos') || '[]')
   }
-  
-  function saveList() {
-    localStorage.setItem('todos', JSON.stringify(taskList.value))
-  }
-}`,
-  todos()
-)
 
-const mousePosition = () => {
-  const x = def(0)
-  const y = def(0)
-  document.addEventListener('mousemove', (e) => {
-    x.value = e.clientX
-    y.value = e.clientY
-  })
-  return el`p "${x}:${y}"`
+  function saveList() {
+    localStorage.setItem('todos', JSON.stringify(taskList.val))
+  }
 }
 
 section(
@@ -294,12 +274,25 @@ section(
   const x = def(0)
   const y = def(0)
   document.addEventListener('mousemove', (e) => {
-    x.value = e.clientX
-    y.value = e.clientY
+    x.val = e.clientX
+    y.val = e.clientY
   })
   return el\`p "\${x}:\${y}"\`
 }`,
   mousePosition()
 )
+
+function mousePosition() {
+  const x = def(0)
+  const y = def(0)
+  document.addEventListener('mousemove', (e) => {
+    x.val = e.clientX
+    y.val = e.clientY
+  })
+  return el`p "${x}:${y}"`
+}
+
+const end = performance.now()
+console.log(`- RENDER TIME: ${end - start}ms -`)
 
 import './prism.js'
