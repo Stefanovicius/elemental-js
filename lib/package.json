@@ -5,8 +5,17 @@
   "author": "Adomas Stefanovičius",
   "license": "MIT",
   "type": "module",
-  "main": "dist/elemental.umd.js",
-  "module": "dist/elemental.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/elemental.umd.cjs",
+  "module": "./dist/elemental.js",
+  "exports": {
+    ".": {
+      "import": "./dist/elemental.js",
+      "require": "./dist/elemental.umd.cjs"
+    }
+  },
   "keywords": [
     "ui",
     "framework",
