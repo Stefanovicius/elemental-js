@@ -14,6 +14,7 @@
     "preview:site": "cd site && vite preview"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "concurrently": "^8.2.2",
     "prettier": "^3.1.0",
     "vite": "^5.0.8"
