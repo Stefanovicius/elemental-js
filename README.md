@@ -4,7 +4,7 @@ Welcome to Elemental.js – the lightweight, no-nonsense JavaScript library for 
 
 ## Introduction
 
-Tired of the heavyweight frameworks? Want something simple yet powerful? Elemental.js is your spellbook for creating dynamic, responsive web interfaces with minimal fuss. Simple syntax, powerful features - all in one compact package.
+Tired of the heavyweight frameworks? Want something simple yet powerful? Elemental.js is your spell-book for creating dynamic, responsive web interfaces with minimal fuss. Simple syntax, powerful features - all in one compact package.
 
 ## Features
 
@@ -32,7 +32,7 @@ import { def, el } from 'elemental-js'
 function counter() {
   const count = def(0)
   const increment = () => ++count.val
-  return el`button onclick="${increment}" "Count is: ${count}"`
+  return el`button onclick=${increment} "Count is: ${count}"`
 }
 
 document.body.append(counter())
