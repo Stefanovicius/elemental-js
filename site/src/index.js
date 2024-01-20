@@ -292,6 +292,20 @@ function mousePosition() {
   return el`p "${x}:${y}"`
 }
 
+section(
+  'Create a document fragment',
+  `const fragment = () => {
+  const frag = el\`"\${el\`span "Hello"\`} \${el\`span "World!"\}"\`
+  return el\`p "\${frag}"\`
+}`,
+  fragment()
+)
+
+function fragment() {
+  const frag = el`"${el`span "Hello"`} ${el`span "World!"`}"`
+  return el`p "${frag}"`
+}
+
 const end = performance.now()
 console.log(`- RENDER TIME: ${end - start}ms -`)
 
