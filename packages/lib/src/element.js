@@ -34,9 +34,9 @@ const handleAttributes = (element, attributes) => {
   })
 }
 
-const processContent = (content) => {
-  if (isReactive(content)) return processContent(content.val)
-  if (Array.isArray(content)) return content.flatMap(processContent)
+const processChildren = (content) => {
+  if (isReactive(content)) return processChildren(content.val)
+  if (Array.isArray(content)) return content.flatMap(processChildren)
   return content instanceof Node ? content : document.createTextNode(content)
 }
 
@@ -46,8 +46,8 @@ const elementsEqual = (a, b) => {
   return false
 }
 
-const updateContent = (element, contentArr) => {
-  const newContent = contentArr.flatMap(processContent)
+const updateChildren = (element, contentArr) => {
+  const newContent = contentArr.flatMap(processChildren)
   newContent.forEach((newChild, index) => {
     const existingChild = element.childNodes[index]
     if (!existingChild) {
@@ -59,16 +59,16 @@ const updateContent = (element, contentArr) => {
   while (element.childNodes.length > newContent.length) element.removeChild(element.lastChild)
 }
 
-const handleContent = (element, contentArr) => {
-  updateContent(element, contentArr)
+const handleChildren = (element, contentArr) => {
+  updateChildren(element, contentArr)
   contentArr.forEach(
-    (content) => isReactive(content) && content.subscribe(() => updateContent(element, contentArr))
+    (content) => isReactive(content) && content.subscribe(() => updateChildren(element, contentArr))
   )
 }
 
 export const createElement = ({ tag, attributes, content }) => {
   const element = document.createElement(tag)
   handleAttributes(element, attributes)
-  handleContent(element, content)
+  handleChildren(element, content)
   return element
 }

@@ -9,12 +9,29 @@ const elementalTypes = [
   }
 ]
 
-const extendDef = (typeCheck, reactiveClass) =>
-  elementalTypes.push({ typeCheck, extendedReactive: reactiveClass })
+/**
+ * Example:
+ * ```
+ * extendDef((Reactive) => [
+ *   (initialValue) => typeof initialValue === 'string',
+ *   class ReactiveString extends Reactive {
+ *     constructor(initialValue, ...derivatives) {
+ *       super(initialValue, ...derivatives)
+ *     }
+ *   }
+ * ])`
+ * ```
+ * @param {(Reactive: Reactive) => [(initialValue: unknown) => boolean, Reactive]} factoryFunction
+ */
+const extendDef = (factoryFunction) => {
+  const [typeCheck, extendedReactive] = factoryFunction(Reactive)
+  elementalTypes.push({ typeCheck, extendedReactive })
+}
 
 /**
  * Creates an instance of a Reactive class to be used in an `el` template
- * @param  {Function[]} derivatives
+ * @param {unknown} initialValue
+ * @param {((initialValue: unknown) => Reactive)[]} derivatives
  * @returns
  */
 function def(initialValue, ...derivatives) {
@@ -25,8 +42,11 @@ function def(initialValue, ...derivatives) {
 
 /**
  * Creates an instance of the element for the specified tag, attributes, and text inside the template:
- * ``` el`div id="main" "Hello World!"` ```
+ * ```
+ * el`div id="main" "Hello World!"`
+ * ```
  * @param {string[]} strings
+ * @param {unknown[]} interpolations
  * @returns {HTMLElement}
  */
 function el(strings, ...interpolations) {
