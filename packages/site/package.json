@@ -11,6 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "elemental-js": "link:..\\lib"
+    "elemental-js": "workspace:*"
   }
 }

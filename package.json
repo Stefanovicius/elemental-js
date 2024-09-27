@@ -6,21 +6,23 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"pnpm run dev:lib\" \"pnpm run dev:site\"",
-    "dev:lib": "cd lib && pnpm run dev",
-    "dev:site": "cd site && pnpm run dev",
-    "build:lib": "cd lib && vite build",
-    "build:site": "cd site && vite build",
-    "preview:site": "cd site && vite preview"
+    "dev": "bun --filter '*' dev",
+    "dev:lib": "bun --filter elemental-js dev",
+    "dev:site": "bun --filter elemental-site dev",
+    "build:lib": "bun --filter elemental-js build",
+    "build:site": "bun --filter elemental-site build",
+    "preview:site": "bun --filter elemental-site preview"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
-    "concurrently": "^8.2.2",
     "prettier": "^3.1.0",
     "vite": "^5.0.8"
   },
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=8.0.0"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
