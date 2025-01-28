@@ -1,6 +1,8 @@
 import { Reactive, ReactiveArray, arr } from './reactive'
-import { createElement } from './element'
 import { parse } from './parser'
+import { handleProps } from './props'
+import { handleChildren } from './children'
+import { text } from './text'
 
 const elementalTypes = [
   {
@@ -41,17 +43,24 @@ function def(initialValue, ...derivatives) {
 }
 
 /**
- * Creates an instance of the element for the specified tag, attributes, and text inside the template:
+ * Creates DOM elements:
  * ```
- * el`div id="main" "Hello World!"`
+ * el`div class="main"`(
+ *   el`p`('Hello World!')
+ * )
  * ```
- * @param {string[]} strings
- * @param {unknown[]} interpolations
- * @returns {HTMLElement}
+ * @param {TemplateStringsArray} strings - An array of strings representing the literal portions of the template.
+ * @param {...(Reactive|Function|boolean|string)} interpolations - Values to be interpolated into the template.
+ * @returns {function(...(HTMLElement|string)): HTMLElement} A function that takes strings and Elements as arguments and returns the parent DOM element.
  */
 function el(strings, ...interpolations) {
-  const ast = parse(strings, ...interpolations)
-  return createElement(ast)
+  return (...children) => {
+    const { tag, props } = parse(strings, ...interpolations)
+    const element = document.createElement(tag)
+    handleProps(element, props)
+    handleChildren(element, children)
+    return element
+  }
 }
 
 /**
@@ -61,4 +70,4 @@ function el(strings, ...interpolations) {
  */
 const sel = (selectors) => document.querySelector(selectors)
 
-export { extendDef, def, arr, el, sel }
+export { extendDef, def, arr, el, text, sel }

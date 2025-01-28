@@ -5,9 +5,6 @@
   "author": "Adomas Stefanovičius",
   "license": "MIT",
   "type": "module",
-  "files": [
-    "dist"
-  ],
   "main": "./dist/elemental.umd.cjs",
   "module": "./dist/elemental.js",
   "exports": {
@@ -16,6 +13,9 @@
       "require": "./dist/elemental.umd.cjs"
     }
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "ui",
     "framework",
@@ -23,6 +23,7 @@
     "components",
     "tiny",
     "lightweight",
+    "library",
     "fast",
     "vanilla",
     "javascript",
@@ -34,6 +35,6 @@
   },
   "devDependencies": {
     "happy-dom": "^13.1.4",
-    "vitest": "^1.2.0"
+    "vitest": "^2.1.3"
   }
 }

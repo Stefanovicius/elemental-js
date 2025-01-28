@@ -27,10 +27,9 @@ export class Reactive {
     this.#subscribers.add(updater)
     return () => this.#subscribers.delete(updater)
   }
-  cleanup() {
+  clearSubscribers() {
     this.#cancellations.forEach((unsubscribe) => unsubscribe())
     this.#cancellations.clear()
-    this.#subscribers.clear()
   }
 }
 
@@ -69,3 +68,5 @@ export class ReactiveArray extends Reactive {
 export const arr = (value, ...derivatives) => {
   return new ReactiveArray(value, ...derivatives)
 }
+
+export const isReactive = (val) => val instanceof Reactive

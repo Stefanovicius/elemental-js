@@ -1,119 +1,103 @@
-import { isQuote, isSingleQuote, isWhitespace, isAlphabetic } from './utilities'
+import { isQuote, isWhitespace } from './utilities'
 
-const ParserState = {
-  TAG: 0,
-  WHITESPACE: 1,
-  ATTRIBUTE: 2,
-  ATTRIBUTE_VALUE: 3,
-  CONTENT: 4
-}
+const TAG = 0
+const WHITESPACE = 1
+const PROP_KEY = 2
+const PROP_VALUE = 3
 
 export function parse(strings, ...interpolations) {
-  let currentState = ParserState.TAG
-  let isSingleQuoted = false
-  let attributeNameBuffer = ''
-  let globalBuffer = ''
+  let state = TAG
+  let buffer = ''
+  let propKey = null
+  let quote = null
 
-  const result = {
-    tag: '',
-    attributes: {},
-    content: []
-  }
-
-  const setState = (newState) => (currentState = newState)
-  const setSingleQuoted = (char) => (isSingleQuoted = isSingleQuote(char))
-  const isEndQuote = (char) => (isSingleQuoted ? isSingleQuote(char) : char === '"')
-  const pushToBuffer = (char) => (globalBuffer += char)
-  const isBufferEmpty = () => globalBuffer === ''
-  const clearBuffer = () => (globalBuffer = '')
-  const pushToAttributeValue = (value) => result.attributes[attributeNameBuffer].push(value)
-  const parsingAttributeValue = () => currentState === ParserState.ATTRIBUTE_VALUE
-  const pushToContent = (value) => result.content.push(value)
-
-  const setTag = () => {
-    result.tag = globalBuffer
-    clearBuffer()
-  }
-  const addAttribute = () => {
-    result.attributes[globalBuffer] = []
-    attributeNameBuffer = globalBuffer
-    clearBuffer()
-  }
+  const result = Object.create(null)
+  result.props = Object.create(null)
+  result.tag = null
 
   strings.forEach((string, stringIndex) => {
     const endIndex = string.length
 
     for (let charIndex = 0; charIndex <= endIndex; charIndex++) {
       const endOfString = charIndex === endIndex
-      const char = string.charAt(charIndex)
+      let char = string.charAt(charIndex)
 
-      switch (currentState) {
-        case ParserState.TAG:
-          if (isWhitespace(char)) {
-            if (!isBufferEmpty()) {
-              setTag()
-              setState(ParserState.WHITESPACE)
-            }
+      switch (state) {
+        case TAG:
+          if (isWhitespace(char) || endOfString) {
+            if (!buffer) throw Error('Invalid tag declaration')
+            result.tag = buffer
+            buffer = ''
+            state = WHITESPACE
             break
           }
+          buffer += char
+          break
+
+        case WHITESPACE:
+          if (endOfString) return result
+          if (isWhitespace(char)) break
+          buffer += char
+          state = PROP_KEY
+          break
+
+        case PROP_KEY:
           if (endOfString) {
-            if (isBufferEmpty()) throw Error('Tag is not defined')
-            setTag()
-            return result
+            propKey = buffer
+            buffer = ''
+            break
           }
-          pushToBuffer(char)
-          break
-
-        case ParserState.WHITESPACE:
-          if (isAlphabetic(char)) {
-            pushToBuffer(char)
-            setState(ParserState.ATTRIBUTE)
-          } else if (isQuote(char)) {
-            setSingleQuoted(char)
-            setState(ParserState.CONTENT)
-          }
-          break
-
-        case ParserState.ATTRIBUTE:
-          if (endOfString || isWhitespace(char)) {
-            addAttribute()
-            pushToAttributeValue(true)
-            if (endOfString) return result
-            setState(ParserState.WHITESPACE)
+          if (isWhitespace(char)) {
+            result.props[buffer] = [true]
+            buffer = ''
+            state = WHITESPACE
             break
           }
           if (char === '=') {
-            addAttribute()
-            const nextCharIndex = charIndex + 1
-            const nextChar = string.charAt(nextCharIndex)
-            if (isQuote(nextChar)) {
-              charIndex = nextCharIndex
-              setSingleQuoted(nextChar)
-              setState(ParserState.ATTRIBUTE_VALUE)
-            } else {
-              pushToAttributeValue(interpolations[stringIndex])
-              setState(ParserState.WHITESPACE)
+            propKey = buffer
+            buffer = ''
+            state = PROP_VALUE
+            result.props[propKey] = []
+            if (endOfString) break
+            char = string[++charIndex]
+            if (isQuote(char)) {
+              quote = char
+              break
+            }
+            if (!char) break
+          }
+          buffer += char
+          break
+
+        case PROP_VALUE:
+          if (endOfString) {
+            if (buffer) {
+              result.props[propKey].push(buffer)
+              buffer = ''
             }
             break
           }
-          pushToBuffer(char)
-          break
-
-        default:
-          if (endOfString || isEndQuote(char)) {
-            if (globalBuffer) {
-              parsingAttributeValue()
-                ? pushToAttributeValue(globalBuffer)
-                : pushToContent(globalBuffer)
-              clearBuffer()
+          if (isQuote(char) && char === quote) {
+            if (buffer) {
+              result.props[propKey].push(buffer)
+              buffer = ''
             }
-            if (endOfString) {
-              parsingAttributeValue()
-                ? pushToAttributeValue(interpolations[stringIndex])
-                : pushToContent(interpolations[stringIndex])
-            } else setState(ParserState.WHITESPACE)
-          } else pushToBuffer(char)
+            propKey = null
+            quote = null
+            state = WHITESPACE
+            break
+          }
+          buffer += char
+          break
       }
+    }
+
+    if (interpolations.length > stringIndex) {
+      if (state !== PROP_VALUE) throw Error('Invalid interpolation')
+      result.props[propKey].push(interpolations[stringIndex])
+      if (!quote) state = WHITESPACE
+    } else if (propKey) {
+      result.props[propKey] = [true]
     }
   })
 

@@ -1,16 +1,17 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
-export default defineConfig({
+export default defineConfig(() => ({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/main.js'),
       name: 'Elemental.js',
       fileName: 'elemental'
-    }
+    },
+    sourcemap: true
   },
   test: {
     globals: true,
     environment: 'happy-dom'
   }
-})
+}))
