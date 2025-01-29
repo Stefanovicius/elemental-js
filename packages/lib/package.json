@@ -1,7 +1,7 @@
 {
   "name": "elemental-js",
   "version": "0.9.0",
-  "description": "A tiny, lightweight, fast, vanilla JavaScript UI framework.",
+  "description": "A tiny, lightweight, fast, vanilla JavaScript UI lib.",
   "author": "Adomas Stefanovičius",
   "license": "MIT",
   "type": "module",
@@ -9,8 +9,8 @@
   "module": "./dist/elemental.js",
   "exports": {
     ".": {
-      "import": "./dist/elemental.js",
-      "require": "./dist/elemental.umd.cjs"
+      "require": "./dist/elemental.umd.cjs",
+      "import": "./dist/elemental.js"
     }
   },
   "files": [
@@ -20,9 +20,10 @@
     "ui",
     "framework",
     "web",
-    "components",
+    "component",
     "tiny",
     "lightweight",
+    "lib",
     "library",
     "fast",
     "vanilla",
@@ -31,10 +32,11 @@
   ],
   "scripts": {
     "dev": "vitest",
-    "build": "vite build"
+    "build": "vite build",
+    "build:watch": "vite build --watch"
   },
   "devDependencies": {
-    "happy-dom": "^13.1.4",
-    "vitest": "^2.1.3"
+    "happy-dom": "^16.7.3",
+    "vitest": "^3.0.4"
   }
 }

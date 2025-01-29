@@ -6,11 +6,11 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "cd packages/lib && pnpm run dev",
-    "dev:site": "pnpm run build && cd packages/site && pnpm run dev",
-    "build": "cd packages/lib && vite build",
-    "build:site": "cd packages/site && vite build",
-    "preview:site": "cd packages/site && vite preview"
+    "dev": "pnpm --filter elemental-js dev",
+    "build": "pnpm --filter elemental-js build",
+    "dev:site": "pnpm --filter elemental-js build:watch & pnpm --filter elemental-js dev & pnpm --filter elemental-site dev & wait",
+    "build:site": "pnpm --filter elemental-site build",
+    "preview:site": "pnpm --filter elemental-site preview"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.12",
