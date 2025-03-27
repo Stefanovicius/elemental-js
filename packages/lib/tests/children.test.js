@@ -23,7 +23,7 @@ describe('Handling children', () => {
     handleChildren(element, children)
     expect(element.childNodes[0].nodeValue).toBe('Initial')
 
-    reactive.val = 'Updated'
+    reactive.value = 'Updated'
     expect(element.childNodes[0].nodeValue).toBe('Updated')
   })
 
@@ -43,15 +43,15 @@ describe('Handling children', () => {
   it('should remove extra children when updating', () => {
     const element = document.createElement('div')
 
-    const [reactive, children] = def(['One', 'Two', 'Three'], (val) =>
-      val.map((text) => el`span`(text))
+    const [reactive, children] = def(['One', 'Two', 'Three'], (value) =>
+      value.map((text) => el`span`(text))
     )
 
     handleChildren(element, [children])
 
     expect(element.childNodes.length).toBe(3)
 
-    reactive.val = ['One']
+    reactive.value = ['One']
 
     expect(element.childNodes.length).toBe(1)
     expect(element.childNodes[0].textContent).toBe('One')

@@ -1,46 +1,8 @@
-import { Reactive, ReactiveArray, arr } from './reactive'
+import { def } from './reactive'
 import { parse } from './parser'
 import { handleProps } from './props'
 import { handleChildren } from './children'
 import { text } from './text'
-
-const elementalTypes = [
-  {
-    typeCheck: (value) => Array.isArray(value),
-    extendedReactive: ReactiveArray
-  }
-]
-
-/**
- * Example:
- * ```
- * extendDef((Reactive) => [
- *   (initialValue) => typeof initialValue === 'string',
- *   class ReactiveString extends Reactive {
- *     constructor(initialValue, ...derivatives) {
- *       super(initialValue, ...derivatives)
- *     }
- *   }
- * ])`
- * ```
- * @param {(Reactive: Reactive) => [(initialValue: unknown) => boolean, Reactive]} factoryFunction
- */
-const extendDef = (factoryFunction) => {
-  const [typeCheck, extendedReactive] = factoryFunction(Reactive)
-  elementalTypes.push({ typeCheck, extendedReactive })
-}
-
-/**
- * Creates an instance of a Reactive class to be used in an `el` template
- * @param {unknown} initialValue
- * @param {((initialValue: unknown) => Reactive)[]} derivatives
- * @returns
- */
-function def(initialValue, ...derivatives) {
-  const ReactiveClass =
-    elementalTypes.find(({ typeCheck }) => typeCheck(initialValue))?.extendedReactive || Reactive
-  return new ReactiveClass(initialValue, ...derivatives)
-}
 
 /**
  * Creates DOM elements:
@@ -70,4 +32,4 @@ function el(strings, ...interpolations) {
  */
 const sel = (selectors) => document.querySelector(selectors)
 
-export { extendDef, def, arr, el, text, sel }
+export { def, el, text, sel }

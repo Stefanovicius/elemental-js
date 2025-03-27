@@ -1,7 +1,7 @@
-import { isReactive } from './reactive'
+import { reactiveType } from './reactive'
 
 const processChildren = (child) => {
-  if (isReactive(child)) return processChildren(child.val)
+  if (reactiveType(child)) return processChildren(child.value)
   if (Array.isArray(child)) return child.flatMap(processChildren)
   return child instanceof Node ? child : document.createTextNode(child)
 }
@@ -28,6 +28,6 @@ const updateChildren = (element, children) => {
 export const handleChildren = (element, children) => {
   updateChildren(element, children)
   children.forEach(
-    (content) => isReactive(content) && content.subscribe(() => updateChildren(element, children))
+    (content) => reactiveType(content) && content.subscribe(() => updateChildren(element, children))
   )
 }

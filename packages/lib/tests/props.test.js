@@ -39,7 +39,7 @@ describe('Props handling', () => {
     handleProps(element, props)
     expect(element.getAttribute('class')).toBe('initial-class')
 
-    reactive.val = 'updated-class'
+    reactive.value = 'updated-class'
     expect(element.getAttribute('class')).toBe('updated-class')
   })
 
@@ -54,7 +54,7 @@ describe('Props handling', () => {
     handleProps(element, props)
     expect(element.getAttribute('data-name')).toBe('John Doe')
 
-    firstName.val = 'Jane'
+    firstName.value = 'Jane'
     expect(element.getAttribute('data-name')).toBe('Jane Doe')
   })
 

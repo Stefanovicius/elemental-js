@@ -3,7 +3,7 @@ import './prism.css'
 
 const start = performance.now()
 
-import { def, el, text } from 'elemental-js'
+import { def, el } from 'elemental-js'
 
 const header = document.querySelector('header')
 
@@ -83,7 +83,7 @@ import { def, el } from 'elemental-js'`),
 
 const counter = () => {
   const count = def(0)
-  const increment = () => ++count.val
+  const increment = () => ++count.value
   return el`button onclick=${increment}`('Count is: ', count)
 }
 
@@ -91,7 +91,7 @@ section(
   'Create a counter',
   `const counter = () => {
   const count = def(0)
-  const increment = () => ++count.val
+  const increment = () => ++count.value
   return el\`button onclick=\${increment}\`('Count is: ', count)
 }`,
   counter()
@@ -105,9 +105,9 @@ section(
   const disabled = def(false)
 
   const handleKeyup = ({ target }) =>
-    target.val === 'disabled'
-      ? (disabled.val = true)
-      : (value.val = target.val)
+    target.value === 'disabled'
+      ? (disabled.value = true)
+      : (value.value = target.value)
 
   const input = el\`input
     placeholder="Color or 'disabled'"
@@ -117,7 +117,7 @@ section(
   \`()
   const enableButton = disabled.derive((val) => {
     if (!val) return ''
-    const handleClick = () => ((disabled.val = false), input.focus())
+    const handleClick = () => ((disabled.value = false), input.focus())
     return el\`button onclick="\${handleClick}"\`('Enable')
   })
 
@@ -131,7 +131,7 @@ function input() {
   const disabled = def(false)
 
   const handleKeyup = ({ target }) => {
-    target.value === 'disabled' ? (disabled.val = true) : (value.val = target.value)
+    target.value === 'disabled' ? (disabled.value = true) : (value.value = target.value)
   }
   const input = el`input
     placeholder="Color or 'disabled'"
@@ -141,7 +141,7 @@ function input() {
   `()
   const enableButton = disabled.derive((val) => {
     if (!val) return ''
-    const handleClick = () => ((disabled.val = false), input.focus())
+    const handleClick = () => ((disabled.value = false), input.focus())
     return el`button onclick="${handleClick}"`('Enable')
   })
 
@@ -166,7 +166,7 @@ section(
         checked="\${item.done}"
         onchange="\${handleChange}"
       \`()
-      return el\`li\`(checkbox, item.val)
+      return el\`li\`(checkbox, item.value)
     })
   )
 
@@ -185,17 +185,17 @@ section(
   return el\`div\`(taskInput, addTaskButton, taskListElement, clearDoneButton)
 
   function addItem() {
-    if (taskInput.val === '') return
+    if (taskInput.value === '') return
     taskList.push({
-      value: taskInput.val,
+      value: taskInput.value,
       done: false
     })
     saveList()
-    taskInput.val = ''
+    taskInput.value = ''
   }
 
   function clearDone() {
-    taskList.val = taskList.filter(({ done }) => !done)
+    taskList.value = taskList.filter(({ done }) => !done)
     saveList()
   }
 
@@ -204,7 +204,7 @@ section(
   }
   
   function saveList() {
-    localStorage.setItem('todos', JSON.stringify(taskList.val))
+    localStorage.setItem('todos', JSON.stringify(taskList.value))
   }
 }`,
   toDos()
@@ -215,7 +215,6 @@ function toDos() {
 
   const taskElements = taskList.derive((list) =>
     list.map((item) => {
-      if (item.hidden) return ''
       const handleChange = ({ target }) => ((item.done = target.checked), saveList())
       const checkbox = el`input
         type="checkbox"
@@ -233,11 +232,9 @@ function toDos() {
   const addTaskButton = el`button onclick="${addItem}"`('Add todo')
   const clearDoneButton = el`button onclick="${clearDone}"`('Clear Done')
 
-  const taskListElement = el`ul style="
-    list-style: none;
-    padding-inline-start: 0;
-    margin-block: 0
-  "`(taskElements)
+  const taskListElement = el`ul style="list-style: none; padding-inline-start: 0; margin-block: 0"`(
+    taskElements
+  )
 
   return el`div`(taskInput, addTaskButton, taskListElement, clearDoneButton)
 
@@ -252,7 +249,7 @@ function toDos() {
   }
 
   function clearDone() {
-    taskList.val = taskList.filter(({ done }) => !done)
+    taskList.value = taskList.filter(({ done }) => !done)
     saveList()
   }
 
@@ -261,7 +258,7 @@ function toDos() {
   }
 
   function saveList() {
-    localStorage.setItem('todos', JSON.stringify(taskList.val))
+    localStorage.setItem('todos', JSON.stringify(taskList.value))
   }
 }
 
@@ -271,8 +268,8 @@ section(
   const x = def(0)
   const y = def(0)
   document.addEventListener('mousemove', (e) => {
-    x.val = e.clientX
-    y.val = e.clientY
+    x.value = e.clientX
+    y.value = e.clientY
   })
   return el\`p\`(x, ':', y)
 }`,
@@ -283,8 +280,8 @@ function mousePosition() {
   const x = def(0)
   const y = def(0)
   document.addEventListener('mousemove', (e) => {
-    x.val = e.clientX
-    y.val = e.clientY
+    x.value = e.clientX
+    y.value = e.clientY
   })
   return el`p`(x, ':', y)
 }
@@ -293,7 +290,7 @@ section(
   'Switch disabled',
   `function disableInputSwitch() {
   const disabled = def(false)
-  const handleClick = () => disabled.val = !disabled.val
+  const handleClick = () => disabled.value = !disabled.value
   return el\`div\`(
     el\`input disabled=\${disabled}\`(),
     el\`button onclick=\${handleClick}\`('Click to switch')
@@ -304,7 +301,7 @@ section(
 
 function disableInputSwitch() {
   const disabled = def(false)
-  const handleClick = () => (disabled.val = !disabled.val)
+  const handleClick = () => (disabled.value = !disabled.value)
   return el`div`(
     el`input disabled=${disabled}  `(),
     el`button onclick=${handleClick}`('Click to switch')
