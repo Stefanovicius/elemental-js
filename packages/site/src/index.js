@@ -3,42 +3,42 @@ import './prism.css'
 
 const start = performance.now()
 
-import { def, el } from 'elemental-js'
+import { def, l } from 'elemental-js'
 
-const header = document.querySelector('header')
+const header = l('header')
 
 const logo = () => {
   const colors = ['red', 'green', 'blue', 'gray']
-  return el`h1 style="margin-bottom: -.2em"`(
-    'Elemental.js'.split('').map((char, i) => el`i style='color: ${colors[i % 4]}'`(char))
+  return l`h1 style="margin-bottom: -.2em"`(
+    'Elemental.js'.split('').map((char, i) => l`i style='color: ${colors[i % 4]}'`(char))
   )
 }
 
 header.append(
   logo(),
-  el`p style="margin-top: 0; margin-left: .2em; font-size: .9em"`('Control the elements!')
+  l`p style="margin-top: 0; margin-left: .2em; font-size: .9em"`('Control the elements!')
 )
 
-const main = document.querySelector('main')
+const main = l('main')
 
-const pre = (input) => el`pre`(el`code class="language-js"`(input))
-const br = el`br`()
+const pre = (input) => l`pre`(l`code class="language-js"`(input))
+const br = l`br`()
 
 main.append(
   br,
-  el`h3`('Install and import the function'),
+  l`h3`('Install and import the function'),
   pre('npm i elemental-js'),
-  pre("import { el } from 'elemental-js'"),
+  pre("import { l } from 'elemental-js'"),
   br
 )
 
 const section = (title, code, component = '') => {
   !Array.isArray(code) && (code = [code])
   main.append(
-    el`h3`(title),
+    l`h3`(title),
     ...code.map((code) => pre(code)),
-    el`div style="display: flex; gap: 1em"`(
-      el`h4 style="margin-block-start: 1em; margin-block-end: 1em"`('Result:'),
+    l`div style="display: flex; gap: 1em"`(
+      l`h4 style="margin-block-start: 1em; margin-block-end: 1em"`('Result:'),
       component
     ),
     br,
@@ -46,45 +46,45 @@ const section = (title, code, component = '') => {
   )
 }
 
-section('Create an input element', 'el`input`()', el`input`())
+section('Create an input element', 'l`input`()', l`input`())
 
-section('Create an input with a boolean attribute', 'el`input disabled`()', el`input disabled`())
+section('Create an input with a boolean attribute', 'l`input disabled`()', l`input disabled`())
 
 section(
   'Create an input with a non-boolean attribute',
-  'el`input placeholder="Enter something..."`()',
-  el`input placeholder="Enter something..."`()
+  'l`input placeholder="Enter something..."`()',
+  l`input placeholder="Enter something..."`()
 )
 
 section(
   'Create an input with multiple attributes',
-  'el`input disabled placeholder="Sorry, not allowed..."`()',
-  el`input disabled placeholder="Sorry, not allowed..."`()
+  'l`input disabled placeholder="Sorry, not allowed..."`()',
+  l`input disabled placeholder="Sorry, not allowed..."`()
 )
 
 section(
   'Create a paragraph',
-  'el`p`("Lorem ipsum dolor sit amet")',
-  el`p`('Lorem ipsum dolor sit amet')
+  'l`p`("Lorem ipsum dolor sit amet")',
+  l`p`('Lorem ipsum dolor sit amet')
 )
 
 section(
   'Create a crimson paragraph',
-  'el`p style="color: crimson"`("Lorem ipsum dolor sit amet")',
-  el`p style="color: crimson"`('Lorem ipsum dolor sit amet')
+  'l`p style="color: crimson"`("Lorem ipsum dolor sit amet")',
+  l`p style="color: crimson"`('Lorem ipsum dolor sit amet')
 )
 
 main.append(
-  el`h3`('Add reactive variables'),
-  pre(`// import { el } from 'elemental-js'
-import { def, el } from 'elemental-js'`),
+  l`h3`('Add reactive variables'),
+  pre(`// import { l } from 'elemental-js'
+import { def, l } from 'elemental-js'`),
   br
 )
 
 const counter = () => {
   const count = def(0)
   const increment = () => ++count.val
-  return el`button onclick=${increment}`('Count is: ', count)
+  return l`button onclick=${increment}`('Count is: ', count)
 }
 
 section(
@@ -92,7 +92,7 @@ section(
   `const counter = () => {
   const count = def(0)
   const increment = () => ++count.val
-  return el\`button onclick=\${increment}\`('Count is: ', count)
+  return l\`button onclick=\${increment}\`('Count is: ', count)
 }`,
   counter()
 )
@@ -109,7 +109,7 @@ section(
       ? (disabled.val = true)
       : (value.val = target.value)
 
-  const input = el\`input
+  const input = l\`input
     placeholder="Color or 'disabled'"
     onkeyup="\${handleKeyup}"
     style="color: \${value}"
@@ -118,10 +118,10 @@ section(
   const enableButton = disabled.derive((val) => {
     if (!val) return ''
     const handleClick = () => ((disabled.val = false), input.focus())
-    return el\`button onclick="\${handleClick}"\`('Enable')
+    return l\`button onclick="\${handleClick}"\`('Enable')
   })
 
-  return el\`div\`(input, enableButton)
+  return l\`div\`(input, enableButton)
 }`,
   input()
 )
@@ -133,7 +133,7 @@ function input() {
   const handleKeyup = ({ target }) => {
     target.value === 'disabled' ? (disabled.val = true) : (value.val = target.value)
   }
-  const input = el`input
+  const input = l`input
     placeholder="Color or 'disabled'"
     onkeyup=${handleKeyup}
     style="color: ${value}"
@@ -142,10 +142,10 @@ function input() {
   const enableButton = disabled.derive((val) => {
     if (!val) return ''
     const handleClick = () => ((disabled.val = false), input.focus())
-    return el`button onclick="${handleClick}"`('Enable')
+    return l`button onclick="${handleClick}"`('Enable')
   })
 
-  return el`div`(input, enableButton)
+  return l`div`(input, enableButton)
 }
 
 section(
@@ -160,29 +160,29 @@ section(
       const handleChange = ({ target }) => (
         (item.done = target.checked), saveList()
       )
-      const checkbox = el\`input
+      const checkbox = l\`input
         type="checkbox"
         style="margin-right: 1ch"
         checked="\${item.done}"
         onchange="\${handleChange}"
       \`()
-      return el\`li\`(checkbox, item.value)
+      return l\`li\`(checkbox, item.value)
     })
   )
 
   const handleKeyup = (e) => e.key === 'Enter' && addItem()
-  const taskInput = el\`input onkeyup="\${handleKeyup}" placeholder="Enter a task..."\`()
+  const taskInput = l\`input onkeyup="\${handleKeyup}" placeholder="Enter a task..."\`()
 
-  const addTaskButton = el\`button onclick="\${addItem}"\`("Add todo")
-  const clearDoneButton = el\`button onclick="\${clearDone}"\`("Clear Done")
+  const addTaskButton = l\`button onclick="\${addItem}"\`("Add todo")
+  const clearDoneButton = l\`button onclick="\${clearDone}"\`("Clear Done")
 
-  const taskListElement = el\`ul
+  const taskListElement = l\`ul
     style="list-style: none;
     padding-inline-start: 0;
     margin-block: 0"
   \`(taskElements)
 
-  return el\`div\`(taskInput, addTaskButton, taskListElement, clearDoneButton)
+  return l\`div\`(taskInput, addTaskButton, taskListElement, clearDoneButton)
 
   function addItem() {
     if (taskInput.value === '') return
@@ -216,27 +216,27 @@ function toDos() {
   const taskElements = taskList.derive((list) =>
     list.map((item) => {
       const handleChange = ({ target }) => ((item.done = target.checked), saveList())
-      const checkbox = el`input
+      const checkbox = l`input
         type="checkbox"
         style="margin-right: 1ch"
         checked="${item.done}"
         onchange="${handleChange}"
       `()
-      return el`li`(checkbox, item.value)
+      return l`li`(checkbox, item.value)
     })
   )
 
   const handleKeyup = (e) => e.key === 'Enter' && addItem()
-  const taskInput = el`input onkeyup="${handleKeyup}" placeholder="Enter a task..."`()
+  const taskInput = l`input onkeyup="${handleKeyup}" placeholder="Enter a task..."`()
 
-  const addTaskButton = el`button onclick="${addItem}"`('Add todo')
-  const clearDoneButton = el`button onclick="${clearDone}"`('Clear Done')
+  const addTaskButton = l`button onclick="${addItem}"`('Add todo')
+  const clearDoneButton = l`button onclick="${clearDone}"`('Clear Done')
 
-  const taskListElement = el`ul style="list-style: none; padding-inline-start: 0; margin-block: 0"`(
+  const taskListElement = l`ul style="list-style: none; padding-inline-start: 0; margin-block: 0"`(
     taskElements
   )
 
-  return el`div`(taskInput, addTaskButton, taskListElement, clearDoneButton)
+  return l`div`(taskInput, addTaskButton, taskListElement, clearDoneButton)
 
   function addItem() {
     if (taskInput.value === '') return alert('Please enter a task')
@@ -271,7 +271,7 @@ section(
     x.value = e.clientX
     y.value = e.clientY
   })
-  return el\`p\`(x, ':', y)
+  return l\`p\`(x, ':', y)
 }`,
   mousePosition()
 )
@@ -283,7 +283,7 @@ function mousePosition() {
     x.val = e.clientX
     y.val = e.clientY
   })
-  return el`p`(x, ':', y)
+  return l`p`(x, ':', y)
 }
 
 section(
@@ -291,9 +291,9 @@ section(
   `function disableInputSwitch() {
   const disabled = def(false)
   const handleClick = () => disabled.value = !disabled.value
-  return el\`div\`(
-    el\`input disabled=\${disabled}\`(),
-    el\`button onclick=\${handleClick}\`('Click to switch')
+  return l\`div\`(
+    l\`input disabled=\${disabled}\`(),
+    l\`button onclick=\${handleClick}\`('Click to switch')
   )
 }`,
   disableInputSwitch()
@@ -302,9 +302,9 @@ section(
 function disableInputSwitch() {
   const disabled = def(false)
   const handleClick = () => (disabled.val = !disabled.val)
-  return el`div`(
-    el`input disabled=${disabled}  `(),
-    el`button onclick=${handleClick}`('Click to switch')
+  return l`div`(
+    l`input disabled=${disabled}  `(),
+    l`button onclick=${handleClick}`('Click to switch')
   )
 }
 
