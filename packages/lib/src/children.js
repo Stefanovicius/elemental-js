@@ -1,8 +1,9 @@
 import { isReactive } from './reactive/core'
+import { isArray } from './utilities'
 
 const processChildren = (child) => {
   if (isReactive(child)) return processChildren(child.val)
-  if (Array.isArray(child)) return child.flatMap(processChildren)
+  if (isArray(child)) return child.flatMap(processChildren)
   return child instanceof Node ? child : document.createTextNode(child)
 }
 

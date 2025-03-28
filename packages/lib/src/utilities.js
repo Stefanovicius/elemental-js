@@ -9,3 +9,5 @@ export function isWhitespace(char) {
 export function isBool(value) {
   return typeof value === 'boolean'
 }
+
+export const isArray = Array.isArray

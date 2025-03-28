@@ -3,6 +3,7 @@ import { parse } from './parser'
 import { handleProps } from './props'
 import { handleChildren } from './children'
 import { text } from './text'
+import { isArray } from './utilities'
 
 /**
  * Selects, or creates DOM elements:
@@ -18,7 +19,7 @@ import { text } from './text'
  * @returns {function(...(HTMLElement|string)): HTMLElement} A function that takes strings and Elements as arguments and returns the parent DOM element.
  */
 function l(input, ...interpolations) {
-  const createMode = Array.isArray(input) && 'raw' in input
+  const createMode = isArray(input) && 'raw' in input
   if (createMode) {
     return (...children) => {
       const { tag, props } = parse(input, ...interpolations)

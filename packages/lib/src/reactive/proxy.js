@@ -1,6 +1,5 @@
 import { REACTIVE } from './core'
-
-const isArray = Array.isArray
+import { isArray } from '../utilities'
 
 export const createReactiveProxy = (value, subscribe, derive, notify) =>
   new Proxy(value, {
