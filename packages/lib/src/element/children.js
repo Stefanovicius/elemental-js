@@ -1,5 +1,5 @@
-import { isReactive } from './reactive/core'
-import { isArray } from './utilities'
+import { isReactive } from '../reactive/core'
+import { isArray } from '../utilities'
 
 const processChildren = (child) => {
   if (isReactive(child)) return processChildren(child.val)

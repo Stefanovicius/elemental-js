@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { handleChildren } from '../src/children'
+import { handleChildren } from '../src/element/children'
 import { l, def } from '../src/main'
 
 describe('Handling children', () => {

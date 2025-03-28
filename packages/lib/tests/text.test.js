@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { text } from '../src/text'
+import { text } from '../src/element/text'
 import { def } from '../src/main'
 
 describe('text.js', () => {

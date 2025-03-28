@@ -1,5 +1,5 @@
-import { isReactive } from './reactive/core'
-import { isBool } from './utilities'
+import { isReactive } from '../reactive/core'
+import { isBool } from '../utilities'
 
 const getComputedValue = (value) => (isReactive(value) ? value.val : value)
 

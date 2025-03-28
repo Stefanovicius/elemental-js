@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { handleProps } from '../src/props'
+import { handleProps } from '../src/element/props'
 import { def } from '../src/main'
 
 describe('Props handling', () => {

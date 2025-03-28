@@ -1,4 +1,4 @@
-import { isReactive } from './reactive/core'
+import { isReactive } from '../reactive/core'
 
 export function text(strings, ...interpolations) {
   const textNode = document.createTextNode('')
