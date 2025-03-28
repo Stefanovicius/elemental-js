@@ -1,4 +1,4 @@
-import { def } from './reactive'
+import { def } from './reactive/core'
 import { parse } from './parser'
 import { handleProps } from './props'
 import { handleChildren } from './children'

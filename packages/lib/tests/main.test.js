@@ -33,8 +33,8 @@ describe('el', () => {
     expect(element.getAttribute('class')).toBe('initial')
     expect(element.textContent).toBe('Initial Content')
 
-    className.value = 'updated'
-    content.value = 'Updated Content'
+    className.val = 'updated'
+    content.val = 'Updated Content'
 
     expect(element.getAttribute('class')).toBe('updated')
     expect(element.textContent).toBe('Updated Content')

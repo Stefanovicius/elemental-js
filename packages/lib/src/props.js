@@ -1,7 +1,7 @@
-import { reactiveType } from './reactive'
+import { isReactive } from './reactive/core'
 import { isBool } from './utilities'
 
-const getComputedValue = (value) => (reactiveType(value) ? value.value : value)
+const getComputedValue = (value) => (isReactive(value) ? value.val : value)
 
 const handleEventListeners = (element, event, listeners) =>
   listeners.forEach((callback) => element.addEventListener(event, callback))
@@ -21,7 +21,7 @@ const handleProp = (element, attribute, valueArr) => {
       : element.setAttribute(attribute, value)
   }
   updateProp()
-  valueArr.forEach((value) => reactiveType(value) && value.subscribe(updateProp))
+  valueArr.forEach((value) => isReactive(value) && value.subscribe(updateProp))
 }
 
 export const handleProps = (element, props) => {

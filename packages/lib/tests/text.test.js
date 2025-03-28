@@ -14,7 +14,7 @@ describe('text.js', () => {
 
     expect(node.nodeValue).toBe('Hello John!')
 
-    name.value = 'Jane'
+    name.val = 'Jane'
     expect(node.nodeValue).toBe('Hello Jane!')
   })
 
@@ -25,10 +25,10 @@ describe('text.js', () => {
 
     expect(node.nodeValue).toBe('John Doe')
 
-    first.value = 'Jane'
+    first.val = 'Jane'
     expect(node.nodeValue).toBe('Jane Doe')
 
-    last.value = 'Smith'
+    last.val = 'Smith'
     expect(node.nodeValue).toBe('Jane Smith')
   })
 })

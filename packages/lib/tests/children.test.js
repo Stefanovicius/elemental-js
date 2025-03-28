@@ -23,7 +23,7 @@ describe('Handling children', () => {
     handleChildren(element, children)
     expect(element.childNodes[0].nodeValue).toBe('Initial')
 
-    reactive.value = 'Updated'
+    reactive.val = 'Updated'
     expect(element.childNodes[0].nodeValue).toBe('Updated')
   })
 
@@ -51,7 +51,7 @@ describe('Handling children', () => {
 
     expect(element.childNodes.length).toBe(3)
 
-    reactive.value = ['One']
+    reactive.val = ['One']
 
     expect(element.childNodes.length).toBe(1)
     expect(element.childNodes[0].textContent).toBe('One')

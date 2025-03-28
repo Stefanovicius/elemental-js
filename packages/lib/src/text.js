@@ -1,4 +1,4 @@
-import { reactiveType } from './reactive'
+import { isReactive } from './reactive/core'
 
 export function text(strings, ...interpolations) {
   const textNode = document.createTextNode('')
@@ -6,16 +6,14 @@ export function text(strings, ...interpolations) {
   const updateTextNode = () => {
     const fullText = strings.reduce((acc, str, i) => {
       const interpolation = interpolations[i]
-      return acc + str + (reactiveType(interpolation) ? interpolation.value : (interpolation ?? ''))
+      return acc + str + (isReactive(interpolation) ? interpolation.val : (interpolation ?? ''))
     }, '')
     textNode.nodeValue = fullText
   }
-
   updateTextNode()
 
   interpolations.forEach(
-    (interpolation) => reactiveType(interpolation) && interpolation.subscribe(updateTextNode)
+    (interpolation) => isReactive(interpolation) && interpolation.subscribe(updateTextNode)
   )
-
   return textNode
 }

@@ -83,7 +83,7 @@ import { def, el } from 'elemental-js'`),
 
 const counter = () => {
   const count = def(0)
-  const increment = () => ++count.value
+  const increment = () => ++count.val
   return el`button onclick=${increment}`('Count is: ', count)
 }
 
@@ -91,7 +91,7 @@ section(
   'Create a counter',
   `const counter = () => {
   const count = def(0)
-  const increment = () => ++count.value
+  const increment = () => ++count.val
   return el\`button onclick=\${increment}\`('Count is: ', count)
 }`,
   counter()
@@ -106,8 +106,8 @@ section(
 
   const handleKeyup = ({ target }) =>
     target.value === 'disabled'
-      ? (disabled.value = true)
-      : (value.value = target.value)
+      ? (disabled.val = true)
+      : (value.val = target.value)
 
   const input = el\`input
     placeholder="Color or 'disabled'"
@@ -117,7 +117,7 @@ section(
   \`()
   const enableButton = disabled.derive((val) => {
     if (!val) return ''
-    const handleClick = () => ((disabled.value = false), input.focus())
+    const handleClick = () => ((disabled.val = false), input.focus())
     return el\`button onclick="\${handleClick}"\`('Enable')
   })
 
@@ -131,7 +131,7 @@ function input() {
   const disabled = def(false)
 
   const handleKeyup = ({ target }) => {
-    target.value === 'disabled' ? (disabled.value = true) : (value.value = target.value)
+    target.value === 'disabled' ? (disabled.val = true) : (value.val = target.value)
   }
   const input = el`input
     placeholder="Color or 'disabled'"
@@ -141,7 +141,7 @@ function input() {
   `()
   const enableButton = disabled.derive((val) => {
     if (!val) return ''
-    const handleClick = () => ((disabled.value = false), input.focus())
+    const handleClick = () => ((disabled.val = false), input.focus())
     return el`button onclick="${handleClick}"`('Enable')
   })
 
@@ -195,7 +195,7 @@ section(
   }
 
   function clearDone() {
-    taskList.value = taskList.filter(({ done }) => !done)
+    taskList.val = taskList.filter(({ done }) => !done)
     saveList()
   }
 
@@ -204,7 +204,7 @@ section(
   }
   
   function saveList() {
-    localStorage.setItem('todos', JSON.stringify(taskList.value))
+    localStorage.setItem('todos', JSON.stringify(taskList.val))
   }
 }`,
   toDos()
@@ -249,7 +249,7 @@ function toDos() {
   }
 
   function clearDone() {
-    taskList.value = taskList.filter(({ done }) => !done)
+    taskList.val = taskList.filter(({ done }) => !done)
     saveList()
   }
 
@@ -258,7 +258,7 @@ function toDos() {
   }
 
   function saveList() {
-    localStorage.setItem('todos', JSON.stringify(taskList.value))
+    localStorage.setItem('todos', JSON.stringify(taskList.val))
   }
 }
 
@@ -280,8 +280,8 @@ function mousePosition() {
   const x = def(0)
   const y = def(0)
   document.addEventListener('mousemove', (e) => {
-    x.value = e.clientX
-    y.value = e.clientY
+    x.val = e.clientX
+    y.val = e.clientY
   })
   return el`p`(x, ':', y)
 }
@@ -301,7 +301,7 @@ section(
 
 function disableInputSwitch() {
   const disabled = def(false)
-  const handleClick = () => (disabled.value = !disabled.value)
+  const handleClick = () => (disabled.val = !disabled.val)
   return el`div`(
     el`input disabled=${disabled}  `(),
     el`button onclick=${handleClick}`('Click to switch')
