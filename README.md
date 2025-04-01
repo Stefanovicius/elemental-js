@@ -18,24 +18,24 @@ Tired of the heavyweight frameworks? Want something simple yet powerful? Element
 Add some elemental power to your project in just a few lines:
 
 ```javascript
-import { el } from 'elemental-js'
+import { l } from 'elemental-js'
 
-// Create a simple element
-const greeting = el`div "Hello, Elemental World!"`
+// Creating a div element with text
+const greeting = l`div`('Hello, Elemental World!')
 ```
 
 ## Example of a Counter Component
 
 ```javascript
-import { def, el } from 'elemental-js'
+import { def, l } from 'elemental-js'
 
 function counter() {
   const count = def(0)
   const increment = () => ++count.val
-  return el`button onclick=${increment} "Count is: ${count}"`
+  return l`button onclick=${increment}`('Count is: ', count)
 }
 
-document.body.append(counter())
+l('#counter').append(counter())
 ```
 
 ## Future Plans
