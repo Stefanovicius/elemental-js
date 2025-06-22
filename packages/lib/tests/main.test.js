@@ -25,7 +25,7 @@ describe('el', () => {
     expect(element.textContent).toBe('Content')
   })
 
-  it('should handle reactive props and children', () => {
+  it('should handle reactive props and children', async () => {
     const className = def('initial')
     const content = def('Initial Content')
     const element = l`div class=${className}`(content)
@@ -35,7 +35,7 @@ describe('el', () => {
 
     className.val = 'updated'
     content.val = 'Updated Content'
-
+    await Promise.resolve()
     expect(element.getAttribute('class')).toBe('updated')
     expect(element.textContent).toBe('Updated Content')
   })

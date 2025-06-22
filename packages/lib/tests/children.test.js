@@ -15,7 +15,7 @@ describe('Handling children', () => {
     expect(element.childNodes[2].nodeValue).toBe('World')
   })
 
-  it('should handle reactive children', () => {
+  it('should handle reactive children', async () => {
     const element = document.createElement('div')
     const reactive = def('Initial')
     const children = [reactive]
@@ -24,6 +24,7 @@ describe('Handling children', () => {
     expect(element.childNodes[0].nodeValue).toBe('Initial')
 
     reactive.val = 'Updated'
+    await Promise.resolve()
     expect(element.childNodes[0].nodeValue).toBe('Updated')
   })
 
@@ -40,7 +41,7 @@ describe('Handling children', () => {
     expect(element.childNodes[2].nodeValue).toBe('Static')
   })
 
-  it('should remove extra children when updating', () => {
+  it('should remove extra children when updating', async () => {
     const element = document.createElement('div')
 
     const [reactive, children] = def(['One', 'Two', 'Three'], (value) =>
@@ -52,7 +53,10 @@ describe('Handling children', () => {
     expect(element.childNodes.length).toBe(3)
 
     reactive.val = ['One']
-
+    // Wait for two microtasks to ensure batched updates are flushed
+    // One for the reactive, and one for the derived children
+    await Promise.resolve()
+    await Promise.resolve()
     expect(element.childNodes.length).toBe(1)
     expect(element.childNodes[0].textContent).toBe('One')
   })

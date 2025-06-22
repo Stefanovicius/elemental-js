@@ -1,4 +1,5 @@
 import { isReactive } from '../reactive/core'
+import { registerCleanup } from './cleanup'
 
 export function text(strings, ...interpolations) {
   const textNode = document.createTextNode('')
@@ -12,8 +13,11 @@ export function text(strings, ...interpolations) {
   }
   updateTextNode()
 
-  interpolations.forEach(
-    (interpolation) => isReactive(interpolation) && interpolation.subscribe(updateTextNode)
-  )
+  interpolations.forEach((interpolation) => {
+    if (isReactive(interpolation)) {
+      const unsubscribe = interpolation.subscribe(updateTextNode)
+      registerCleanup(textNode, unsubscribe)
+    }
+  })
   return textNode
 }

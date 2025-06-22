@@ -8,17 +8,18 @@ describe('text.js', () => {
     expect(node.nodeValue).toBe('Hello World')
   })
 
-  it('should handle reactive interpolations', () => {
+  it('should handle reactive interpolations', async () => {
     const name = def('John')
     const node = text`Hello ${name}!`
 
     expect(node.nodeValue).toBe('Hello John!')
 
     name.val = 'Jane'
+    await Promise.resolve()
     expect(node.nodeValue).toBe('Hello Jane!')
   })
 
-  it('should handle multiple interpolations', () => {
+  it('should handle multiple interpolations', async () => {
     const first = def('John')
     const last = def('Doe')
     const node = text`${first} ${last}`
@@ -26,9 +27,11 @@ describe('text.js', () => {
     expect(node.nodeValue).toBe('John Doe')
 
     first.val = 'Jane'
+    await Promise.resolve()
     expect(node.nodeValue).toBe('Jane Doe')
 
     last.val = 'Smith'
+    await Promise.resolve()
     expect(node.nodeValue).toBe('Jane Smith')
   })
 })

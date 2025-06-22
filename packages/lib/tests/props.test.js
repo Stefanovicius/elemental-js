@@ -29,7 +29,7 @@ describe('Props handling', () => {
     expect(element.hasAttribute('hidden')).toBe(false)
   })
 
-  it('should handle reactive attributes', () => {
+  it('should handle reactive attributes', async () => {
     const element = document.createElement('div')
     const reactive = def('initial-class')
     const props = {
@@ -40,10 +40,11 @@ describe('Props handling', () => {
     expect(element.getAttribute('class')).toBe('initial-class')
 
     reactive.val = 'updated-class'
+    await Promise.resolve()
     expect(element.getAttribute('class')).toBe('updated-class')
   })
 
-  it('should handle multiple values in attribute', () => {
+  it('should handle multiple values in attribute', async () => {
     const element = document.createElement('div')
     const firstName = def('John')
     const lastName = def('Doe')
@@ -55,6 +56,7 @@ describe('Props handling', () => {
     expect(element.getAttribute('data-name')).toBe('John Doe')
 
     firstName.val = 'Jane'
+    await Promise.resolve()
     expect(element.getAttribute('data-name')).toBe('Jane Doe')
   })
 

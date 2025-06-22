@@ -1,5 +1,6 @@
 import { isReactive } from '../reactive/core'
 import { isArray } from '../utilities'
+import { registerCleanup } from './cleanup'
 
 const processChildren = (child) => {
   if (isReactive(child)) return processChildren(child.val)
@@ -28,7 +29,10 @@ const updateChildren = (element, children) => {
 
 export const handleChildren = (element, children) => {
   updateChildren(element, children)
-  children.forEach(
-    (content) => isReactive(content) && content.subscribe(() => updateChildren(element, children))
-  )
+  children.forEach((content) => {
+    if (isReactive(content)) {
+      const unsubscribe = content.subscribe(() => updateChildren(element, children))
+      registerCleanup(element, unsubscribe)
+    }
+  })
 }

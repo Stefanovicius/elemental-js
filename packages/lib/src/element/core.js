@@ -1,4 +1,5 @@
 import { parse } from '../parser'
+import { createCustomElement } from './element'
 import { handleProps } from './props'
 import { handleChildren } from './children'
 import { isArray } from '../utilities'
@@ -16,12 +17,12 @@ import { isArray } from '../utilities'
  * @param {...(Reactive|Function|boolean|string)} interpolations - Values to be interpolated into the template.
  * @returns {function(...(HTMLElement|string)): HTMLElement} A function that takes strings and Elements as arguments and returns the parent DOM element.
  */
-export const l = (input, ...interpolations) => {
+export const handleTemplate = (input, ...interpolations) => {
   const createMode = isArray(input) && 'raw' in input
   if (createMode) {
     return (...children) => {
       const { tag, props } = parse(input, ...interpolations)
-      const element = document.createElement(tag)
+      const element = createCustomElement(tag)
       handleProps(element, props)
       handleChildren(element, children)
       return element
