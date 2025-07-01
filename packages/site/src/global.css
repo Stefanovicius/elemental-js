@@ -1,0 +1,179 @@
+:is(*, *::before, *::after) {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.4rem;
+  line-height: 1.8;
+  padding-inline: 4rem;
+  background-color: cornsilk;
+  color: #000;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 90svh;
+  padding-block-start: 40svh;
+  padding-inline: 4rem;
+}
+
+nav {
+  position: fixed;
+  top: 1.2rem;
+  right: 1em;
+  display: flex;
+  gap: 0.8rem;
+  flex-direction: column;
+  text-align: right;
+}
+
+nav a {
+  display: flex;
+  text-decoration: none;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.6rem;
+  color: #000;
+}
+
+nav a:hover {
+  color: #444;
+}
+
+nav span {
+  line-height: 1;
+  font-size: 1.2rem;
+  padding: 0.2em 0.4em;
+  translate: 1.8rem 0;
+  opacity: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+nav a:hover span {
+  pointer-events: none;
+  translate: 0 0;
+  opacity: 1;
+}
+
+nav a svg {
+  height: 1.6rem;
+  width: 1.6rem;
+}
+
+#wand {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  right: 0;
+  bottom: 0;
+  background-image: url('/wand.svg');
+  background-size: cover;
+  background-position: center;
+  translate: -50% -20px;
+  z-index: -1;
+}
+
+h1 {
+  text-transform: uppercase;
+  font-family: 'Outfit Variable', sans-serif;
+  font-weight: 900;
+  font-size: 3.5rem;
+}
+
+.tagline {
+  font-weight: 900;
+  font-size: 2.5rem;
+  font-size: 1.7rem;
+  text-align: center;
+  max-width: 100%;
+  width: 40ch;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  max-width: 100%;
+  width: 50ch;
+}
+
+ul {
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+li {
+  margin-bottom: 1em;
+}
+
+.tab-container button {
+  display: inline-block;
+  transition: all 0.1s ease-in-out;
+}
+
+.tab-container .active {
+  cursor: default;
+}
+
+.tab-container .active {
+  translate: 0 9px;
+}
+
+pre[class*='language-'] {
+  position: relative;
+  font-size: 1.2rem;
+  border-radius: 5px;
+}
+
+.tab-container pre {
+  margin-block-start: 0;
+}
+
+pre,
+code {
+  border: none;
+}
+
+code {
+  padding: 0.2em 0.4em;
+}
+
+.btn {
+  background-color: #222;
+  color: #eee;
+  border-radius: 5px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn:not(.active):hover {
+  background-color: #444;
+}
+
+.copy-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.2em 0.4em;
+  border: 0;
+  background-color: #222;
+  color: #eee;
+}
+
+footer {
+  padding-block-start: 20svh;
+  padding-block-end: 1em;
+}
