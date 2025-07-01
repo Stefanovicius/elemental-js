@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { handleChildren } from '../src/element/children'
-import { l, def } from '../src/main'
+import { el, def } from '../src/main'
 
 describe('Handling children', () => {
   it('should append text nodes correctly', () => {
@@ -45,7 +45,7 @@ describe('Handling children', () => {
     const element = document.createElement('div')
 
     const [reactive, children] = def(['One', 'Two', 'Three'], (value) =>
-      value.map((text) => l`span`(text))
+      value.map((text) => el`span`(text))
     )
 
     handleChildren(element, [children])
