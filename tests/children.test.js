@@ -1,0 +1,77 @@
+import { describe, it, expect } from 'vitest'
+import { handleChildren } from '../src/element/children'
+import { handleTemplate } from '../src/element/core'
+import { createReactive } from '../src/reactive/core'
+
+describe('Handling children', () => {
+  it('should append text nodes correctly', () => {
+    const element = document.createElement('div')
+    const children = ['Hello', ' ', 'World']
+
+    handleChildren(element, children)
+
+    expect(element.childNodes.length).toBe(3)
+    expect(element.childNodes[0].nodeValue).toBe('Hello')
+    expect(element.childNodes[1].nodeValue).toBe(' ')
+    expect(element.childNodes[2].nodeValue).toBe('World')
+  })
+
+  it('should handle reactive children', async () => {
+    const element = document.createElement('div')
+    const reactive = createReactive('Initial')
+    const children = [reactive]
+
+    handleChildren(element, children)
+    expect(element.childNodes[0].nodeValue).toBe('Initial')
+
+    reactive.val = 'Updated'
+    await Promise.resolve()
+    expect(element.childNodes[0].nodeValue).toBe('Updated')
+  })
+
+  it('should handle mixed children types', () => {
+    const element = document.createElement('div')
+    const child1 = document.createElement('span')
+    const reactive = createReactive('Reactive')
+    const children = [child1, reactive, 'Static']
+
+    handleChildren(element, children)
+    expect(element.childNodes.length).toBe(3)
+    expect(element.childNodes[0]).toBe(child1)
+    expect(element.childNodes[1].nodeValue).toBe('Reactive')
+    expect(element.childNodes[2].nodeValue).toBe('Static')
+  })
+
+  it('should remove extra children when updating', async () => {
+    const element = document.createElement('div')
+
+    const [reactive, children] = createReactive(['One', 'Two', 'Three'], (value) =>
+      value.map((text) => handleTemplate`span`(text))
+    )
+
+    handleChildren(element, [children])
+
+    expect(element.childNodes.length).toBe(3)
+
+    reactive.val = ['One']
+    // Wait for two microtasks to ensure batched updates are flushed
+    // One for the reactive, and one for the derived children
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(element.childNodes.length).toBe(1)
+    expect(element.childNodes[0].textContent).toBe('One')
+  })
+
+  it('should handle nested arrays of children', () => {
+    const element = document.createElement('div')
+    const children = [
+      ['Hello', ' ', 'World'],
+      ['!', '!']
+    ]
+
+    handleChildren(element, children)
+
+    expect(element.childNodes.length).toBe(5)
+    expect(element.textContent).toBe('Hello World!!')
+  })
+})
