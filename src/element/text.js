@@ -1,7 +1,7 @@
 import { isReactive } from '../reactive/core'
 import { registerCleanup } from './cleanup'
 
-export function text(strings, ...interpolations) {
+export const text = (strings, ...interpolations) => {
   const textNode = document.createTextNode('')
 
   const updateTextNode = () => {
