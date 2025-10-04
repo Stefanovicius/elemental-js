@@ -1,6 +1,6 @@
 {
   "name": "elemental-js",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "A tiny, lightweight, fast, and dependency-free vanilla JavaScript UI lib.",
   "author": "Adomas Stefanovičius",
   "license": "MIT",
