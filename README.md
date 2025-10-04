@@ -38,7 +38,7 @@ You can use `@require` to import it in userscripts:
 ```javascript
 // available via window when using CDN
 // const { def, el } = window;
-import { def, el } from 'elem-js'
+import { def, el } from 'elemental-lite'
 
 function Counter() {
   const count = def(0)
