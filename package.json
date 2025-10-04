@@ -2,20 +2,6 @@
   "name": "elemental-lite",
   "version": "0.10.0",
   "description": "A tiny, lightweight, fast, and dependency-free vanilla JavaScript UI lib.",
-  "author": "Adomas Stefanovičius",
-  "license": "MIT",
-  "type": "module",
-  "main": "./dist/elemental.umd.cjs",
-  "module": "./dist/elemental.js",
-  "exports": {
-    ".": {
-      "require": "./dist/elemental.umd.cjs",
-      "import": "./dist/elemental.js"
-    }
-  },
-  "files": [
-    "dist"
-  ],
   "keywords": [
     "ui",
     "framework",
@@ -29,6 +15,28 @@
     "vanilla",
     "javascript",
     "js"
+  ],
+  "homepage": "https://github.com/Stefanovicius/elemental-js#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Stefanovicius/elemental-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Stefanovicius/elemental-js/issues"
+  },
+  "license": "MIT",
+  "author": "Adomas Stefanovičius",
+  "type": "module",
+  "main": "./dist/elemental.umd.cjs",
+  "module": "./dist/elemental.js",
+  "exports": {
+    ".": {
+      "require": "./dist/elemental.umd.cjs",
+      "import": "./dist/elemental.js"
+    }
+  },
+  "files": [
+    "dist"
   ],
   "scripts": {
     "dev": "vitest",
