@@ -18,19 +18,19 @@ Tired of the heavyweight frameworks? Want something simple yet powerful? Element
 Install through `npm`:
 
 ```bash
-npm install elem-js
+npm install elemental-lite
 ```
 
 Or include via **CDN**:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/elem-js/dist/elemental.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/elemental-lite/dist/elemental.min.js"></script>
 ```
 
 You can use `@require` to import it in userscripts:
 
 ```javascript
-// @require     https://cdn.jsdelivr.net/npm/elem-js/dist/elemental.min.js
+// @require     https://cdn.jsdelivr.net/npm/elemental-lite/dist/elemental.min.js
 ```
 
 ## Example of a Counter Component
@@ -38,7 +38,7 @@ You can use `@require` to import it in userscripts:
 ```javascript
 // available via window when using CDN
 // const { def, el } = window;
-import { def, el } from 'elem-js'
+import { def, el } from 'elemental-lite'
 
 function Counter() {
   const count = def(0)
