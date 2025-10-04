@@ -32,7 +32,9 @@
   ],
   "scripts": {
     "dev": "vitest",
-    "build": "vite build"
+    "build": "vite build",
+    "test": "vitest run",
+    "release": "changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.12",
