@@ -1,5 +1,4 @@
 ---
-'elemental-site': patch
 'elemental-js': patch
 ---
 
