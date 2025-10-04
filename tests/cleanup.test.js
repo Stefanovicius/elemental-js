@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { registerCleanup, cleanupNode } from '../src/element/cleanup'
-import { def } from 'elemental-js'
 import { handleChildren } from '../src/element/children'
+import { createReactive } from '../src/reactive/core'
 import { text } from '../src/element/text'
 
 function createElement() {
@@ -44,7 +44,7 @@ describe('cleanup', () => {
 
   it('unsubscribes from reactive children on cleanup', async () => {
     const el = createElement()
-    const child = def('foo')
+    const child = createReactive('foo')
     const spy = vi.fn()
     child.subscribe(spy)
     handleChildren(el, [child])
@@ -55,7 +55,7 @@ describe('cleanup', () => {
   })
 
   it('unsubscribes from reactive interpolations on cleanup', async () => {
-    const t = def('foo')
+    const t = createReactive('foo')
     const node = text`${t}`
     const spy = vi.fn()
     t.subscribe(spy)

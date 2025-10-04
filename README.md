@@ -4,7 +4,7 @@ Welcome to Elemental.js – the lightweight, no-nonsense JavaScript library for 
 
 ## Introduction
 
-Tired of the heavyweight frameworks? Want something simple yet powerful? Elemental.js is your spell-book for creating dynamic, responsive web interfaces with minimal fuss. Simple syntax, powerful features - all in one compact package.
+Tired of the heavyweight frameworks? Want something simple yet powerful? Elemental.js is your spell-book for creating simple dynamic, web interfaces with minimal fuss. Simple syntax, powerful features - all in one compact package.
 
 ## Features
 
@@ -15,38 +15,46 @@ Tired of the heavyweight frameworks? Want something simple yet powerful? Element
 
 ## Getting Started
 
-Add some elemental power to your project in just a few lines:
+Install through `npm`:
+
+```bash
+npm install elemental-js
+```
+
+Or include via **CDN**:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/elemental-js/dist/elemental.min.js"></script>
+```
+
+You can use `@require` to import it in userscripts:
 
 ```javascript
-import { el } from 'elemental-js'
-
-// Creating a div element with text
-const greeting = el`div`('Hello, Elemental World!')
+// @require     https://cdn.jsdelivr.net/npm/elemental-js/dist/elemental.min.js
 ```
 
 ## Example of a Counter Component
 
 ```javascript
+// available via window when using CDN
+// const { def, el } = window;
 import { def, el } from 'elemental-js'
 
-function counter() {
+function Counter() {
   const count = def(0)
   const increment = () => ++count.val
   return el`button onclick=${increment}`('Count is: ', count)
 }
 
-el('#counter').append(counter())
+el('#counter').append(Counter())
 ```
 
 ## Future Plans
 
 Elemental.js is just at the beginning of its journey, here are the plans for its evolution:
 
-- **Refactoring for Efficiency**: The first version was a thrilling rush of creation. Next, I'm rolling up my sleeves to refactor the code. This will not only make Elemental.js more efficient but also easier to understand and contribute to.
-- **Comprehensive Testing**: Testing is crucial, and it's on my list. I plan to implement a thorough testing process to ensure reliability and stability in every element controlled by Elemental.js.
-- **Documentation Development**: As the library matures, so will its documentation. Detailed guides and examples will be provided, making it easier for users to master Elemental.js and use it to its full potential.
-- **Community Contributions**: Once the foundation is solid, I'll be laying out clear guidelines for contributions. I'm excited to see how fellow developers can add their magic to Elemental.js, enhancing it with their unique ideas and improvements.
-- **Performance Optimization**: Continuous performance tuning is a given. Expect leaner, faster code in future releases, ensuring that Elemental.js remains a lightweight yet powerful tool for developers.
+- **Building a Website**: Every lib needs a home. I'm working on a dedicated website to showcase Elemental.js, complete with examples, and documentation.
+- **Building a Community**: Once the foundation is solid, I'll be laying out clear guidelines for contributions. And add a userscripts section to the site.
 - **Feature Expansion**: I have a vision of adding more features while keeping the core simple and intuitive. Stay tuned for updates that bring new capabilities to your elemental toolkit.
 
 ## Let the Elements Be With You

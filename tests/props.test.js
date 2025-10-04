@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { handleProps } from '../src/element/props'
-import { def } from '../src/main'
+import { createReactive } from '../src/reactive/core'
 
 describe('Props handling', () => {
   it('should set static attributes', () => {
@@ -31,7 +31,7 @@ describe('Props handling', () => {
 
   it('should handle reactive attributes', async () => {
     const element = document.createElement('div')
-    const reactive = def('initial-class')
+    const reactive = createReactive('initial-class')
     const props = {
       class: [reactive]
     }
@@ -46,8 +46,8 @@ describe('Props handling', () => {
 
   it('should handle multiple values in attribute', async () => {
     const element = document.createElement('div')
-    const firstName = def('John')
-    const lastName = def('Doe')
+    const firstName = createReactive('John')
+    const lastName = createReactive('Doe')
     const props = {
       'data-name': [firstName, ' ', lastName]
     }

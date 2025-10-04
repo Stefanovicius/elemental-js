@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import { createReactive } from '../src/reactive/core'
 import { text } from '../src/element/text'
-import { def } from '../src/main'
 
 describe('text.js', () => {
   it('should create static text nodes', () => {
@@ -9,7 +9,7 @@ describe('text.js', () => {
   })
 
   it('should handle reactive interpolations', async () => {
-    const name = def('John')
+    const name = createReactive('John')
     const node = text`Hello ${name}!`
 
     expect(node.nodeValue).toBe('Hello John!')
@@ -20,8 +20,8 @@ describe('text.js', () => {
   })
 
   it('should handle multiple interpolations', async () => {
-    const first = def('John')
-    const last = def('Doe')
+    const first = createReactive('John')
+    const last = createReactive('Doe')
     const node = text`${first} ${last}`
 
     expect(node.nodeValue).toBe('John Doe')
