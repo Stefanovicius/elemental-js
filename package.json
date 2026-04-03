@@ -19,7 +19,7 @@
   "homepage": "https://github.com/Stefanovicius/elemental-js#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Stefanovicius/elemental-js.git"
+    "url": "git+https://github.com/Stefanovicius/elemental-js.git"
   },
   "bugs": {
     "url": "https://github.com/Stefanovicius/elemental-js/issues"

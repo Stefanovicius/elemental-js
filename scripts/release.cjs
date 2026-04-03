@@ -39,5 +39,5 @@ const tag = `v${version}`
 run('git', ['add', 'package.json', 'pnpm-lock.yaml'])
 run('git', ['commit', '-m', `chore(release): ${tag}`])
 run('git', ['tag', tag])
-run('npm', ['publish'])
+run('npm', ['publish', '--provenance=false'])
 run('git', ['push', '--follow-tags'])
