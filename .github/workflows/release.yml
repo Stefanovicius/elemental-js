@@ -1,11 +1,19 @@
 name: Release
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: Semver bump to publish
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 permissions:
   contents: write
-  pull-requests: write
   id-token: write
 
 jobs:
@@ -27,14 +35,23 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+      - run: npm version ${{ inputs.release_type }} --no-git-tag-version
+      - run: pnpm install --lockfile-only
       - run: pnpm test
-      - run: pnpm build
+      - run: pnpm test:dist
 
-      - name: Changesets — Version or Publish
-        uses: changesets/action@v1
-        with:
-          publish: pnpm release
+      - name: Commit version bump and tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          VERSION="$(node -p "JSON.parse(require('fs').readFileSync('package.json','utf8')).version")"
+          git add package.json pnpm-lock.yaml
+          git commit -m "release: v${VERSION}"
+          git tag "v${VERSION}"
+          git push
+          git push origin "v${VERSION}"
+
+      - name: Publish to npm
+        run: npm publish
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_ACCESS: public

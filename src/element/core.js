@@ -7,9 +7,9 @@ import { isArray } from '../utilities'
 /**
  * Selects, or creates DOM elements:
  * ```
- * l('body').append(
- *   l`div class="main"`(
- *     l`p`('Hello World!')
+ * el('body').append(
+ *   el`div class="main"`(
+ *     el`p`('Hello World!')
  *   )
  * )
  * ```
