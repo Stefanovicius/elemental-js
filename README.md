@@ -27,6 +27,8 @@ Or include via **CDN**:
 <script src="https://cdn.jsdelivr.net/npm/elemental-lite/dist/elemental.min.js"></script>
 ```
 
+This exposes `def`, `el`, and `txt` on `window`.
+
 You can use `@require` to import it in userscripts:
 
 ```javascript
@@ -35,9 +37,9 @@ You can use `@require` to import it in userscripts:
 
 ## Example of a Counter Component
 
+With npm / ESM:
+
 ```javascript
-// available via window when using CDN
-// const { def, el } = window;
 import { def, el } from 'elemental-lite'
 
 function Counter() {
@@ -49,14 +51,25 @@ function Counter() {
 el('#counter').append(Counter())
 ```
 
-## Future Plans
+With CDN:
 
-Elemental.js is just at the beginning of its journey, here are the plans for its evolution:
+```html
+<script src="https://cdn.jsdelivr.net/npm/elemental-lite/dist/elemental.min.js"></script>
+<script>
+  function Counter() {
+    const count = def(0)
+    const increment = () => ++count.val
+    return el`button onclick=${increment}`('Count is: ', count)
+  }
 
-- **Building a Website**: Every lib needs a home. I'm working on a dedicated website to showcase Elemental.js, complete with examples, and documentation.
-- **Building a Community**: Once the foundation is solid, I'll be laying out clear guidelines for contributions. And add a userscripts section to the site.
-- **Feature Expansion**: I have a vision of adding more features while keeping the core simple and intuitive. Stay tuned for updates that bring new capabilities to your elemental toolkit.
+  el('#counter').append(Counter())
+</script>
+```
 
 ## Let the Elements Be With You
 
 Embrace the power of Elemental.js and let the elements guide your path to creating enchanting user interfaces. Who knew controlling the elements could be this easy?
+
+## Note
+
+Elemental.js is a small hobby experiment. It is intentionally simple, still lightly validated, and should be treated as an exploratory library rather than a production-proven framework.

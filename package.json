@@ -27,11 +27,11 @@
   "license": "MIT",
   "author": "Adomas Stefanovičius",
   "type": "module",
-  "main": "./dist/elemental.umd.cjs",
+  "main": "./dist/elemental.js",
   "module": "./dist/elemental.js",
+  "browser": "./dist/elemental.min.js",
   "exports": {
     ".": {
-      "require": "./dist/elemental.umd.cjs",
       "import": "./dist/elemental.js"
     }
   },
@@ -40,12 +40,12 @@
   ],
   "scripts": {
     "dev": "vitest",
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.browser.config.js",
     "test": "vitest run",
-    "release": "changeset publish"
+    "test:dist": "pnpm build && node ./scripts/check-dist-esm.mjs && node ./scripts/check-dist-browser.cjs",
+    "release:check": "pnpm test && pnpm test:dist"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.12",
     "happy-dom": "^16.7.3",
     "prettier": "^3.4.2",
     "vite": "^6.0.11",
