@@ -133,3 +133,30 @@ describe('Reactive strings', () => {
     expect(derived.val).toBe('WORLD')
   })
 })
+
+describe('Reactive objects', () => {
+  it('creates a reactive object with direct property access', () => {
+    const reactive = createReactive({ count: 1 })
+    expect(reactive.count).toBe(1)
+  })
+
+  it('updates a derived value when an object property changes', async () => {
+    const reactive = createReactive({ count: 1 })
+    const derived = reactive.derive((value) => value.count * 2)
+
+    reactive.count = 2
+    await Promise.resolve()
+
+    expect(derived.val).toBe(4)
+  })
+
+  it('updates a derived value when an object property is deleted', async () => {
+    const reactive = createReactive({ count: 1 })
+    const derived = reactive.derive((value) => value.count ?? 0)
+
+    delete reactive.count
+    await Promise.resolve()
+
+    expect(derived.val).toBe(0)
+  })
+})

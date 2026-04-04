@@ -10,6 +10,7 @@ import {
 export const REACTIVE = Symbol('reactive')
 
 export const createReactive = (initialValue, ...derivedConstructors) => {
+  const isProxyReactive = typeof initialValue === 'object' && initialValue !== null
   const subscribers = new Set()
   const disposers = new Set()
   let onSubscribersChange = null
@@ -53,14 +54,14 @@ export const createReactive = (initialValue, ...derivedConstructors) => {
   }
 
   const reactive =
-    typeof initialValue === 'object' && initialValue !== null
+    isProxyReactive
       ? createReactiveProxy(initialValue, subscribe, derive, dispose, notifySubscribers)
       : createReactivePrimitive(initialValue, subscribe, derive, dispose, notifySubscribers)
 
   initReactiveLifecycle(reactive, registerDisposer, setSubscribersChangeHandler)
 
   function derive(constructor, ...constructors) {
-    const getDerivedValue = () => constructor(reactive.val)
+    const getDerivedValue = () => constructor(isProxyReactive ? reactive : reactive.val)
     const derived = createReactive(getDerivedValue())
     let owners = 0
     let subscriberCount = 0

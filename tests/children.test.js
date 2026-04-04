@@ -29,6 +29,20 @@ describe('Handling children', () => {
     expect(element.childNodes[0].nodeValue).toBe('Updated')
   })
 
+  it('should preserve equivalent text nodes on sibling updates', async () => {
+    const element = document.createElement('div')
+    const reactive = createReactive('Initial')
+
+    handleChildren(element, ['Static', reactive])
+    const staticNode = element.childNodes[0]
+
+    reactive.val = 'Updated'
+    await Promise.resolve()
+
+    expect(element.childNodes[0]).toBe(staticNode)
+    expect(element.textContent).toBe('StaticUpdated')
+  })
+
   it('should handle mixed children types', () => {
     const element = document.createElement('div')
     const child1 = document.createElement('span')

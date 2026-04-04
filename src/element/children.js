@@ -20,9 +20,7 @@ const collectReactiveChildren = (child, collected = new Set()) => {
 }
 
 const elementsEqual = (a, b) => {
-  if (typeof a === 'string' && typeof b === 'string') return a === b
-  if (a instanceof HTMLElement && b instanceof HTMLElement) return a.isEqualNode(b)
-  return false
+  return a instanceof Node && b instanceof Node && a.isEqualNode(b)
 }
 
 const updateChildren = (element, children) => {
