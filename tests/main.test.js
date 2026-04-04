@@ -39,4 +39,21 @@ describe('el', () => {
     expect(element.getAttribute('class')).toBe('updated')
     expect(element.textContent).toBe('Updated Content')
   })
+
+  it('should return an array for matching selectors', () => {
+    const first = document.createElement('div')
+    const second = document.createElement('div')
+    first.className = 'item'
+    second.className = 'item'
+    document.body.append(first, second)
+
+    expect(el('.item')).toEqual([first, second])
+
+    first.remove()
+    second.remove()
+  })
+
+  it('should throw when a selector matches nothing', () => {
+    expect(() => el('.missing')).toThrow('Selector not found: .missing')
+  })
 })
