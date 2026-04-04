@@ -74,4 +74,16 @@ describe('Handling children', () => {
     expect(element.childNodes.length).toBe(5)
     expect(element.textContent).toBe('Hello World!!')
   })
+
+  it('should update reactives nested inside child arrays', async () => {
+    const element = document.createElement('div')
+    const reactive = createReactive('Hello')
+
+    handleChildren(element, [[reactive]])
+    expect(element.textContent).toBe('Hello')
+
+    reactive.val = 'Updated'
+    await Promise.resolve()
+    expect(element.textContent).toBe('Updated')
+  })
 })

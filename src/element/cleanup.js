@@ -16,3 +16,8 @@ export function cleanupNode(element) {
     cleanupMap.delete(element)
   }
 }
+
+export function cleanupTree(node) {
+  cleanupNode(node)
+  node.childNodes.forEach(cleanupTree)
+}

@@ -1,13 +1,14 @@
 import { REACTIVE } from './core'
 import { isArray } from '../utilities'
 
-export const createReactiveProxy = (value, subscribe, derive, notify) =>
+export const createReactiveProxy = (value, subscribe, derive, dispose, notify) =>
   new Proxy(value, {
     get(target, prop) {
       if (prop === REACTIVE) return true
       if (prop === 'val' && isArray(target)) return target
       if (prop === 'subscribe') return subscribe
       if (prop === 'derive') return derive
+      if (prop === 'dispose') return dispose
       return Reflect.get(target, prop)
     },
     set(target, prop, value) {

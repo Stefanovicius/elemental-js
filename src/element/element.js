@@ -1,4 +1,4 @@
-import { cleanupNode } from './cleanup'
+import { cleanupTree } from './cleanup'
 
 const getElementConstructor = (tag) => document.createElement(tag).constructor || HTMLElement
 
@@ -11,7 +11,7 @@ export const createCustomElement = (tagName) => {
         super()
       }
       disconnectedCallback() {
-        cleanupNode(this)
+        cleanupTree(this)
       }
     }
     customElements.define(customTagName, CustomElement, { extends: tagName })

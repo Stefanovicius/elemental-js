@@ -77,6 +77,10 @@ With CDN:
 
 Embrace the power of Elemental.js and let the elements guide your path to creating enchanting user interfaces. Who knew controlling the elements could be this easy?
 
-## Note
+## Notes
 
 Elemental.js is a small hobby experiment. It is intentionally simple, still lightly validated, and should be treated as an exploratory library rather than a production-proven framework.
+
+It is browser-only and expects a live DOM environment with `document`, `Node`, `customElements`, and `Promise` microtasks.
+
+Lifecycle cleanup currently relies on customized built-in custom elements via `customElements.define(..., { extends })` and `document.createElement(tag, { is })`. That keeps the implementation small, but browser support for this pattern is narrower than baseline DOM support. In environments without it, element creation or automatic cleanup can fail.

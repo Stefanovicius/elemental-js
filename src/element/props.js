@@ -1,4 +1,5 @@
 import { isReactive } from '../reactive/core'
+import { attachOwner, detachOwner } from '../reactive/lifecycle'
 import { registerCleanup } from './cleanup'
 import { isBool } from '../utilities'
 
@@ -30,8 +31,10 @@ const handleProp = (element, attribute, valueArr) => {
   updateProp()
   valueArr.forEach((value) => {
     if (isReactive(value)) {
+      attachOwner(value)
       const unsubscribe = value.subscribe(updateProp)
       registerCleanup(element, unsubscribe)
+      registerCleanup(element, () => detachOwner(value))
     }
   })
 }

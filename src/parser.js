@@ -96,8 +96,14 @@ export function parse(strings, ...interpolations) {
       if (state !== PROP_VALUE) throw Error('Invalid interpolation')
       result.props[propKey].push(interpolations[stringIndex])
       if (!quote) state = WHITESPACE
+    } else if (state === PROP_VALUE) {
+      if (quote) throw Error('Unterminated quoted attribute value')
+      if (!result.props[propKey].length) throw Error('Invalid attribute value')
+      propKey = null
+      state = WHITESPACE
     } else if (propKey) {
       result.props[propKey] = [true]
+      propKey = null
     }
   })
 

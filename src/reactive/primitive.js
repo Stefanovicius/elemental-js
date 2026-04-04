@@ -1,6 +1,6 @@
 import { REACTIVE } from './core'
 
-export const createReactivePrimitive = (initialValue, subscribe, derive, notify) => {
+export const createReactivePrimitive = (initialValue, subscribe, derive, dispose, notify) => {
   let value = initialValue
   return {
     get val() {
@@ -13,6 +13,7 @@ export const createReactivePrimitive = (initialValue, subscribe, derive, notify)
     },
     subscribe,
     derive,
+    dispose,
     valueOf() {
       return value
     },

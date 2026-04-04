@@ -111,4 +111,25 @@ describe('Reactive strings', () => {
     expect(derivedA.val).toBe('HELLO WORLD AGAIN!')
     expect(derivedB.val).toBe('hello world again!')
   })
+
+  it('disposes derived subscriptions explicitly', async () => {
+    const reactive = createReactive('Hello')
+    const derived = reactive.derive((value) => value.toUpperCase())
+
+    derived.dispose()
+    reactive.val = 'World'
+    await Promise.resolve()
+
+    expect(derived.val).toBe('HELLO')
+  })
+
+  it('stays up to date without subscribers', async () => {
+    const reactive = createReactive('Hello')
+    const derived = reactive.derive((value) => value.toUpperCase())
+
+    reactive.val = 'World'
+    await Promise.resolve()
+
+    expect(derived.val).toBe('WORLD')
+  })
 })

@@ -252,4 +252,12 @@ describe('Attribute parsing', () => {
       props: { 'data-attr': [null] }
     })
   })
+
+  it('throws on unterminated quoted values', () => {
+    expect(() => parse`div class="open`).toThrow('Unterminated quoted attribute value')
+  })
+
+  it('throws on empty explicit attribute values', () => {
+    expect(() => parse`div class=`).toThrow('Invalid attribute value')
+  })
 })

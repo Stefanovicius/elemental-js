@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { registerCleanup, cleanupNode } from '../src/element/cleanup'
+import { registerCleanup, cleanupNode, cleanupTree } from '../src/element/cleanup'
 import { handleChildren } from '../src/element/children'
 import { createReactive } from '../src/reactive/core'
 import { text } from '../src/element/text'
@@ -61,6 +61,35 @@ describe('cleanup', () => {
     t.subscribe(spy)
     cleanupNode(node)
     t.val = 'bar'
+    await Promise.resolve()
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it('disposes derived reactives used by text nodes on cleanup', async () => {
+    const source = createReactive('foo')
+    const derived = source.derive((value) => value.toUpperCase())
+    const node = text`${derived}`
+
+    cleanupNode(node)
+    source.val = 'bar'
+    await Promise.resolve()
+
+    expect(derived.val).toBe('FOO')
+  })
+
+  it('cleans up descendant handlers when cleaning a subtree', async () => {
+    const parent = createElement()
+    const child = createElement()
+    const reactive = createReactive('foo')
+    const node = text`${reactive}`
+
+    child.append(node)
+    parent.append(child)
+    cleanupTree(parent)
+
+    const spy = vi.fn()
+    reactive.subscribe(spy)
+    reactive.val = 'bar'
     await Promise.resolve()
     expect(spy).toHaveBeenCalledTimes(1)
   })
