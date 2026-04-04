@@ -39,6 +39,10 @@ You can use `@require` to import it in userscripts:
 
 With npm / ESM:
 
+```html
+<div id="counter"></div>
+```
+
 ```javascript
 import { def, el } from 'elemental-lite'
 
@@ -55,6 +59,9 @@ With CDN:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/elemental-lite/dist/elemental.min.js"></script>
+
+<div id="counter"></div>
+
 <script>
   function Counter() {
     const count = def(0)

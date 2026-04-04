@@ -28,6 +28,18 @@ if (workingTreeStatus) {
   process.exit(1)
 }
 
+const currentBranch = capture('git', ['branch', '--show-current'])
+if (currentBranch !== 'main') {
+  console.error('Refusing to release outside the main branch.')
+  process.exit(1)
+}
+
+if (!process.env.NPM_TOKEN) {
+  console.error('Refusing to release without NPM_TOKEN set.')
+  process.exit(1)
+}
+
+run('npm', ['whoami'])
 run('npm', ['version', releaseType, '--no-git-tag-version'])
 run('pnpm', ['install', '--lockfile-only'])
 run('pnpm', ['release:check'])
@@ -38,6 +50,6 @@ const tag = `v${version}`
 
 run('git', ['add', 'package.json', 'pnpm-lock.yaml'])
 run('git', ['commit', '-m', `chore(release): ${tag}`])
-run('git', ['tag', tag])
+run('git', ['tag', '-a', tag, '-m', tag])
 run('npm', ['publish', '--provenance=false'])
 run('git', ['push', '--follow-tags'])
