@@ -34,4 +34,20 @@ describe('text.js', () => {
     await Promise.resolve()
     expect(node.nodeValue).toBe('Jane Smith')
   })
+
+  it('should handle object reactives through val-backed stringification', async () => {
+    const person = createReactive({
+      name: 'John',
+      toString() {
+        return this.name
+      }
+    })
+    const node = text`${person}`
+
+    expect(node.nodeValue).toBe('John')
+
+    person.name = 'Jane'
+    await Promise.resolve()
+    expect(node.nodeValue).toBe('Jane')
+  })
 })

@@ -140,6 +140,11 @@ describe('Reactive objects', () => {
     expect(reactive.count).toBe(1)
   })
 
+  it('exposes the proxied object through val', () => {
+    const reactive = createReactive({ count: 1 })
+    expect(reactive.val.count).toBe(1)
+  })
+
   it('updates a derived value when an object property changes', async () => {
     const reactive = createReactive({ count: 1 })
     const derived = reactive.derive((value) => value.count * 2)
@@ -158,5 +163,17 @@ describe('Reactive objects', () => {
     await Promise.resolve()
 
     expect(derived.val).toBe(0)
+  })
+
+  it('replaces object contents through val assignment', async () => {
+    const reactive = createReactive({ count: 1, stale: true })
+    const derived = reactive.derive((value) => [value.count, value.stale ?? false])
+
+    reactive.val = { count: 2 }
+    await Promise.resolve()
+
+    expect(reactive.count).toBe(2)
+    expect('stale' in reactive).toBe(false)
+    expect(derived.val).toEqual([2, false])
   })
 })

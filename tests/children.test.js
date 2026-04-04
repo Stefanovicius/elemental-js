@@ -100,4 +100,21 @@ describe('Handling children', () => {
     await Promise.resolve()
     expect(element.textContent).toBe('Updated')
   })
+
+  it('should handle object reactives as children', async () => {
+    const element = document.createElement('div')
+    const reactive = createReactive({
+      value: 'Hello',
+      toString() {
+        return this.value
+      }
+    })
+
+    handleChildren(element, [reactive])
+    expect(element.textContent).toBe('Hello')
+
+    reactive.value = 'Updated'
+    await Promise.resolve()
+    expect(element.textContent).toBe('Updated')
+  })
 })

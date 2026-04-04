@@ -44,6 +44,23 @@ describe('Props handling', () => {
     expect(element.getAttribute('class')).toBe('updated-class')
   })
 
+  it('should handle object reactives in attributes', async () => {
+    const element = document.createElement('div')
+    const reactive = createReactive({
+      value: 'initial',
+      toString() {
+        return this.value
+      }
+    })
+
+    handleProps(element, { class: [reactive] })
+    expect(element.getAttribute('class')).toBe('initial')
+
+    reactive.value = 'updated'
+    await Promise.resolve()
+    expect(element.getAttribute('class')).toBe('updated')
+  })
+
   it('should handle multiple values in attribute', async () => {
     const element = document.createElement('div')
     const firstName = createReactive('John')

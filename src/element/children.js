@@ -4,7 +4,10 @@ import { isArray } from '../utilities'
 import { cleanupTree, registerCleanup } from './cleanup'
 
 const processChildren = (child) => {
-  if (isReactive(child)) return processChildren(child.val)
+  if (isReactive(child)) {
+    const value = child.val
+    return value === child ? document.createTextNode(child) : processChildren(value)
+  }
   if (isArray(child)) return child.flatMap(processChildren)
   return child instanceof Node ? child : document.createTextNode(child)
 }
@@ -13,7 +16,8 @@ const collectReactiveChildren = (child, collected = new Set()) => {
   if (isReactive(child)) {
     if (collected.has(child)) return collected
     collected.add(child)
-    return collectReactiveChildren(child.val, collected)
+    const value = child.val
+    return value === child ? collected : collectReactiveChildren(value, collected)
   }
   if (isArray(child)) child.forEach((item) => collectReactiveChildren(item, collected))
   return collected
