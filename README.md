@@ -15,67 +15,48 @@ Tired of the heavyweight frameworks? Want something simple yet powerful? Element
 
 ## Getting Started
 
+### Setup
+
 Install through `npm`:
 
 ```bash
 npm install elemental-lite
 ```
 
-Or include via **CDN**:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/elemental-lite/dist/elemental.min.js"></script>
+```javascript
+import { def, el } from 'elemental-lite'
 ```
 
-This exposes `def`, `el`, and `txt` on `window`.
+Or include it through CDN:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/elemental-lite@0.10.1/dist/elemental.min.js"></script>
+```
 
 You can use `@require` to import it in userscripts:
 
 ```javascript
-// @require     https://cdn.jsdelivr.net/npm/elemental-lite/dist/elemental.min.js
+// @require https://cdn.jsdelivr.net/npm/elemental-lite@0.10.1/dist/elemental.min.js
 ```
 
-## Example of a Counter Component
-
-With npm / ESM:
+### Markup
 
 ```html
 <div id="counter"></div>
 ```
 
-```javascript
-import { def, el } from 'elemental-lite'
+### Component
 
+```javascript
 function Counter() {
   const count = def(0)
   const increment = () => ++count.val
   return el`button onclick=${increment}`('Count is: ', count)
 }
 
-el('#counter').append(Counter())
+const [counter] = el('#counter')
+counter.append(Counter())
 ```
-
-With CDN:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/elemental-lite/dist/elemental.min.js"></script>
-
-<div id="counter"></div>
-
-<script>
-  function Counter() {
-    const count = def(0)
-    const increment = () => ++count.val
-    return el`button onclick=${increment}`('Count is: ', count)
-  }
-
-  el('#counter').append(Counter())
-</script>
-```
-
-## Let the Elements Be With You
-
-Embrace the power of Elemental.js and let the elements guide your path to creating enchanting user interfaces. Who knew controlling the elements could be this easy?
 
 ## Notes
 
@@ -84,3 +65,7 @@ Elemental.js is a small hobby experiment. It is intentionally simple, still ligh
 It is browser-only and expects a live DOM environment with `document`, `Node`, `customElements`, and `Promise` microtasks.
 
 Lifecycle cleanup currently relies on customized built-in custom elements via `customElements.define(..., { extends })` and `document.createElement(tag, { is })`. That keeps the implementation small, but browser support for this pattern is narrower than baseline DOM support. In environments without it, element creation or automatic cleanup can fail.
+
+## Let the Elements Be With You
+
+Embrace the power of Elemental.js and let the elements guide your path to creating enchanting user interfaces. Who knew controlling the elements could be this easy?

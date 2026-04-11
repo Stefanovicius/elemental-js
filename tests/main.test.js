@@ -53,7 +53,7 @@ describe('el', () => {
     second.remove()
   })
 
-  it('should throw when a selector matches nothing', () => {
-    expect(() => el('.missing')).toThrow('Selector not found: .missing')
+  it('should return an empty array when a selector matches nothing', () => {
+    expect(el('.missing')).toEqual([])
   })
 })

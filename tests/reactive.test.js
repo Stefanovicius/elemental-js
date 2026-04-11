@@ -2,6 +2,29 @@ import { describe, it, expect, vi } from 'vitest'
 import { createReactive } from '../src/reactive/core'
 
 describe('batched reactivity', () => {
+  it('notifies primitive subscribers after updates', async () => {
+    const a = createReactive(0)
+    const spy = vi.fn()
+
+    a.subscribe(spy)
+    a.val = 1
+    await Promise.resolve()
+
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it('stops notifying after unsubscribe', async () => {
+    const a = createReactive(0)
+    const spy = vi.fn()
+
+    const unsubscribe = a.subscribe(spy)
+    unsubscribe()
+    a.val = 1
+    await Promise.resolve()
+
+    expect(spy).not.toHaveBeenCalled()
+  })
+
   it('batches multiple updates in a microtask', async () => {
     const a = createReactive(0)
     const spy = vi.fn()
@@ -140,6 +163,17 @@ describe('Reactive objects', () => {
     expect(reactive.count).toBe(1)
   })
 
+  it('notifies object subscribers on property changes', async () => {
+    const reactive = createReactive({ count: 1 })
+    const spy = vi.fn()
+
+    reactive.subscribe(spy)
+    reactive.count = 2
+    await Promise.resolve()
+
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
   it('exposes the proxied object through val', () => {
     const reactive = createReactive({ count: 1 })
     expect(reactive.val.count).toBe(1)
@@ -175,5 +209,18 @@ describe('Reactive objects', () => {
     expect(reactive.count).toBe(2)
     expect('stale' in reactive).toBe(false)
     expect(derived.val).toEqual([2, false])
+  })
+})
+
+describe('Reactive arrays', () => {
+  it('notifies array subscribers on val replacement', async () => {
+    const reactive = createReactive(['a'])
+    const spy = vi.fn()
+
+    reactive.subscribe(spy)
+    reactive.val = ['b']
+    await Promise.resolve()
+
+    expect(spy).toHaveBeenCalledTimes(1)
   })
 })

@@ -15,7 +15,5 @@ export const handleTemplate = (input, ...interpolations) => {
       return element
     }
   }
-  const elements = [...document.querySelectorAll(input)]
-  if (!elements.length) throw Error(`Selector not found: ${input}`)
-  return elements
+  return [...document.querySelectorAll(input)]
 }
