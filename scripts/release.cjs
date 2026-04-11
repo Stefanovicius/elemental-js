@@ -38,10 +38,17 @@ if (currentBranch !== 'main') {
 
 run('git', ['fetch', 'origin', 'main', 'dev'])
 
+const ahead = capture('git', ['rev-list', '--count', 'origin/main..main'])
+const behindMain = capture('git', ['rev-list', '--count', 'main..origin/main'])
+if (ahead !== '0' || behindMain !== '0') {
+  console.error(`main is out of sync with origin/main (${ahead} ahead, ${behindMain} behind). Push or pull first.`)
+  process.exit(1)
+}
+
 if (!hotfix) {
-  const behind = capture('git', ['rev-list', '--count', 'main..origin/dev'])
-  if (behind !== '0') {
-    console.error(`main is ${behind} commit(s) behind origin/dev. Merge dev first (or use --hotfix).`)
+  const behindDev = capture('git', ['rev-list', '--count', 'main..origin/dev'])
+  if (behindDev !== '0') {
+    console.error(`main is ${behindDev} commit(s) behind origin/dev. Merge dev first (or use --hotfix).`)
     process.exit(1)
   }
 }
