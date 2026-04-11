@@ -39,17 +39,31 @@ if (!process.env.NPM_TOKEN) {
   process.exit(1)
 }
 
-run('npm', ['whoami'])
+run('pnpm', ['release:check'])
+
 run('npm', ['version', releaseType, '--no-git-tag-version'])
 run('pnpm', ['install', '--lockfile-only'])
-run('pnpm', ['release:check'])
 
 const packageJsonPath = path.resolve(__dirname, '../package.json')
 const { version } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
 const tag = `v${version}`
 
-run('git', ['add', 'package.json', 'pnpm-lock.yaml'])
-run('git', ['commit', '-m', `chore(release): ${tag}`])
-run('git', ['tag', '-a', tag, '-m', tag])
-run('npm', ['publish', '--provenance=false'])
-run('git', ['push', '--follow-tags'])
+const readmePath = path.resolve(__dirname, '../README.md')
+const readme = fs.readFileSync(readmePath, 'utf8')
+const updatedReadme = readme.replace(/elemental-lite@[^/]+/g, `elemental-lite@${version}`)
+if (updatedReadme !== readme) fs.writeFileSync(readmePath, updatedReadme)
+
+try {
+  run('git', ['add', 'package.json', 'pnpm-lock.yaml', 'README.md'])
+  run('git', ['commit', '-m', `chore(release): ${tag}`])
+  run('git', ['tag', '-a', tag, '-m', tag])
+  run('npm', ['publish', '--provenance=false'])
+  run('git', ['push', '--follow-tags'])
+} catch (error) {
+  console.error('Release failed, rolling back…')
+  try { run('git', ['tag', '-d', tag]) } catch {}
+  try { run('git', ['reset', '--hard', 'HEAD~1']) } catch {
+    run('git', ['checkout', '--', 'package.json', 'pnpm-lock.yaml', 'README.md'])
+  }
+  throw error
+}
