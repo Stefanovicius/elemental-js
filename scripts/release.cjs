@@ -3,10 +3,12 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const allowedReleaseTypes = new Set(['patch', 'minor', 'major'])
-const releaseType = process.argv[2]
+const args = process.argv.slice(2)
+const hotfix = args.includes('--hotfix')
+const releaseType = args.find(a => a !== '--hotfix')
 
 if (!allowedReleaseTypes.has(releaseType)) {
-  console.error('Usage: pnpm release <patch|minor|major>')
+  console.error('Usage: pnpm release <patch|minor|major> [--hotfix]')
   process.exit(1)
 }
 
@@ -32,6 +34,16 @@ const currentBranch = capture('git', ['branch', '--show-current'])
 if (currentBranch !== 'main') {
   console.error('Refusing to release outside the main branch.')
   process.exit(1)
+}
+
+run('git', ['fetch', 'origin', 'main', 'dev'])
+
+if (!hotfix) {
+  const behind = capture('git', ['rev-list', '--count', 'main..origin/dev'])
+  if (behind !== '0') {
+    console.error(`main is ${behind} commit(s) behind origin/dev. Merge dev first (or use --hotfix).`)
+    process.exit(1)
+  }
 }
 
 if (!process.env.NPM_TOKEN) {
