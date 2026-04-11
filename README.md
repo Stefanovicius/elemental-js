@@ -30,13 +30,13 @@ import { def, el } from 'elemental-lite'
 Or include it through CDN:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/elemental-lite@0.10.1/dist/elemental.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/elemental-lite@0.11.0/dist/elemental.min.js"></script>
 ```
 
 You can use `@require` to import it in userscripts:
 
 ```javascript
-// @require https://cdn.jsdelivr.net/npm/elemental-lite@0.10.1/dist/elemental.min.js
+// @require https://cdn.jsdelivr.net/npm/elemental-lite@0.11.0/dist/elemental.min.js
 ```
 
 ### Markup
