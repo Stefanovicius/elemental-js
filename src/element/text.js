@@ -14,7 +14,7 @@ export const text = (strings, ...interpolations) => {
   }
   updateTextNode()
 
-  interpolations.forEach((interpolation) => {
+  interpolations.forEach(interpolation => {
     if (isReactive(interpolation)) {
       attachOwner(interpolation)
       const unsubscribe = interpolation.subscribe(updateTextNode)

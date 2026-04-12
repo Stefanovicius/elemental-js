@@ -15,7 +15,7 @@ export function isObject(value) {
 }
 
 export function toKebabCase(string) {
-  return string.replace(/[A-Z]/g, (match) => '-' + match.toLowerCase())
+  return string.replace(/[A-Z]/g, match => '-' + match.toLowerCase())
 }
 
 export const isArray = Array.isArray

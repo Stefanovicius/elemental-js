@@ -1,8 +1,8 @@
 import { cleanupTree } from './cleanup'
 
-const getElementConstructor = (tag) => document.createElement(tag).constructor || HTMLElement
+const getElementConstructor = tag => document.createElement(tag).constructor || HTMLElement
 
-export const createCustomElement = (tagName) => {
+export const createCustomElement = tagName => {
   const customTagName = `elemental-${tagName}`
   if (!customElements.get(customTagName)) {
     const ElementConstructor = getElementConstructor(tagName)

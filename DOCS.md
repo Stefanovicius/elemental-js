@@ -101,7 +101,7 @@ Use `.derive(fn)` to create derived reactives:
 
 ```js
 const count = def(2)
-const doubled = count.derive((value) => value * 2)
+const doubled = count.derive(value => value * 2)
 ```
 
 You can also create a base reactive and multiple derived values in one call:
@@ -109,8 +109,8 @@ You can also create a base reactive and multiple derived values in one call:
 ```js
 const [count, doubled, tripled] = def(
   2,
-  (value) => value * 2,
-  (value) => value * 3
+  value => value * 2,
+  value => value * 3
 )
 ```
 

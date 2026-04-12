@@ -20,35 +20,35 @@ export const createReactive = (initialValue, ...derivedConstructors) => {
       batchScheduled = true
       Promise.resolve().then(() => {
         batchScheduled = false
-        subscribers.forEach((callback) => callback())
+        subscribers.forEach(callback => callback())
       })
     }
   }
 
-  const subscribe = (callback) => {
+  const subscribe = callback => {
     subscribers.add(callback)
     onSubscribersChange?.(subscribers.size)
     return () => unsubscribe(callback)
   }
 
-  const unsubscribe = (callback) => {
+  const unsubscribe = callback => {
     const deleted = subscribers.delete(callback)
     if (deleted) onSubscribersChange?.(subscribers.size)
     return deleted
   }
 
-  const registerDisposer = (callback) => {
+  const registerDisposer = callback => {
     disposers.add(callback)
     return () => disposers.delete(callback)
   }
 
   const dispose = () => {
-    disposers.forEach((callback) => callback())
+    disposers.forEach(callback => callback())
     disposers.clear()
     subscribers.clear()
   }
 
-  const setSubscribersChangeHandler = (callback) => {
+  const setSubscribersChangeHandler = callback => {
     onSubscribersChange = callback
   }
 
@@ -71,7 +71,7 @@ export const createReactive = (initialValue, ...derivedConstructors) => {
     }
 
     registerReactiveDisposer(derived, unsubscribeFromSource)
-    setReactiveSubscribersChangeHandler(derived, (count) => {
+    setReactiveSubscribersChangeHandler(derived, count => {
       subscriberCount = count
       disposeIfUnused()
     })
@@ -86,11 +86,11 @@ export const createReactive = (initialValue, ...derivedConstructors) => {
       }
     )
 
-    return constructors.length ? [derived, ...constructors.map((fn) => derive(fn))] : derived
+    return constructors.length ? [derived, ...constructors.map(fn => derive(fn))] : derived
   }
 
   if (!derivedConstructors.length) return reactive
-  return [reactive, ...derivedConstructors.map((constructor) => derive(constructor))]
+  return [reactive, ...derivedConstructors.map(constructor => derive(constructor))]
 }
 
-export const isReactive = (value) => value && value[REACTIVE]
+export const isReactive = value => value && value[REACTIVE]

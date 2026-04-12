@@ -43,6 +43,7 @@
     "build": "vite build && vite build --config vite.browser.config.js",
     "test": "vitest run",
     "test:dist": "pnpm build && node ./scripts/check-dist-esm.mjs && node ./scripts/check-dist-browser.cjs",
+    "format": "prettier --write .",
     "release:check": "pnpm test && pnpm test:dist",
     "release": "node ./scripts/release.cjs"
   },

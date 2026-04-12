@@ -25,16 +25,13 @@ export const createReactiveProxy = (value, subscribe, derive, dispose, notify) =
         }
         const targetKeys = Object.keys(target)
         const valueKeys = Object.keys(value)
-        if (
-          targetKeys.length === valueKeys.length &&
-          targetKeys.every((key) => target[key] === value[key])
-        ) {
+        if (targetKeys.length === valueKeys.length && targetKeys.every(key => target[key] === value[key])) {
           return true
         }
-        targetKeys.forEach((key) => {
+        targetKeys.forEach(key => {
           if (!(key in value)) Reflect.deleteProperty(target, key)
         })
-        Reflect.ownKeys(value).forEach((key) => Reflect.set(target, key, value[key]))
+        Reflect.ownKeys(value).forEach(key => Reflect.set(target, key, value[key]))
         notify()
         return true
       }

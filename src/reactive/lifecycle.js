@@ -1,6 +1,6 @@
 const lifecycleMap = new WeakMap()
 
-const getLifecycle = (reactive) => lifecycleMap.get(reactive)
+const getLifecycle = reactive => lifecycleMap.get(reactive)
 
 export const initReactiveLifecycle = (reactive, registerDisposer, setSubscribersChangeHandler) => {
   lifecycleMap.set(reactive, {
@@ -26,5 +26,5 @@ export const setReactiveOwnerHandlers = (reactive, attach, detach) => {
   lifecycle.detachOwner = detach
 }
 
-export const attachOwner = (reactive) => getLifecycle(reactive)?.attachOwner()
-export const detachOwner = (reactive) => getLifecycle(reactive)?.detachOwner()
+export const attachOwner = reactive => getLifecycle(reactive)?.attachOwner()
+export const detachOwner = reactive => getLifecycle(reactive)?.detachOwner()

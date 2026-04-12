@@ -59,8 +59,8 @@ describe('Handling children', () => {
   it('should remove extra children when updating', async () => {
     const element = document.createElement('div')
 
-    const [reactive, children] = createReactive(['One', 'Two', 'Three'], (value) =>
-      value.map((text) => handleTemplate`span`(text))
+    const [reactive, children] = createReactive(['One', 'Two', 'Three'], value =>
+      value.map(text => handleTemplate`span`(text))
     )
 
     handleChildren(element, [children])

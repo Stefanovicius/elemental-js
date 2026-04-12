@@ -3,7 +3,7 @@ import { attachOwner, detachOwner } from '../reactive/lifecycle'
 import { isArray } from '../utilities'
 import { cleanupTree, registerCleanup } from './cleanup'
 
-const processChildren = (child) => {
+const processChildren = child => {
   if (isReactive(child)) {
     const value = child.val
     return value === child ? document.createTextNode(child) : processChildren(value)
@@ -19,7 +19,7 @@ const collectReactiveChildren = (child, collected = new Set()) => {
     const value = child.val
     return value === child ? collected : collectReactiveChildren(value, collected)
   }
-  if (isArray(child)) child.forEach((item) => collectReactiveChildren(item, collected))
+  if (isArray(child)) child.forEach(item => collectReactiveChildren(item, collected))
   return collected
 }
 
@@ -49,7 +49,7 @@ export const handleChildren = (element, children) => {
   let unsubscribers = []
 
   const clearSubscriptions = () => {
-    unsubscribers.forEach((unsubscribe) => unsubscribe())
+    unsubscribers.forEach(unsubscribe => unsubscribe())
     unsubscribers = []
   }
 
@@ -64,7 +64,7 @@ export const handleChildren = (element, children) => {
     dependencies.forEach(detachOwner)
     clearSubscriptions()
     nextDependencies.forEach(attachOwner)
-    unsubscribers = nextDependencies.map((dependency) => dependency.subscribe(render))
+    unsubscribers = nextDependencies.map(dependency => dependency.subscribe(render))
     dependencies = nextDependencies
   }
 

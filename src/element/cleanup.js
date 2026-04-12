@@ -12,7 +12,7 @@ export function registerCleanup(element, callback) {
 export function cleanupNode(element) {
   const handlers = cleanupMap.get(element)
   if (handlers) {
-    handlers.forEach((fn) => fn())
+    handlers.forEach(handler => handler())
     cleanupMap.delete(element)
   }
 }

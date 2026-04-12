@@ -67,7 +67,7 @@ describe('cleanup', () => {
 
   it('disposes derived reactives used by text nodes on cleanup', async () => {
     const source = createReactive('foo')
-    const derived = source.derive((value) => value.toUpperCase())
+    const derived = source.derive(value => value.toUpperCase())
     const node = text`${derived}`
 
     cleanupNode(node)

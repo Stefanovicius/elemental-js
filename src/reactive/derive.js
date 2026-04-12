@@ -6,19 +6,17 @@ import {
 } from './lifecycle'
 
 export const derive = (dependencies, handler) => {
-  const calculate = () => handler(...dependencies.map((dependency) => dependency.val))
+  const calculate = () => handler(...dependencies.map(dependency => dependency.val))
   const result = createReactive(calculate())
   let owners = 0
   let subscriberCount = 0
 
-  const unsubscribers = dependencies.map((dependency) =>
-    dependency.subscribe(() => (result.val = calculate()))
-  )
+  const unsubscribers = dependencies.map(dependency => dependency.subscribe(() => (result.val = calculate())))
 
   const disposeIfUnused = () => owners === 0 && subscriberCount === 0 && result.dispose()
 
-  unsubscribers.forEach((unsubscribe) => registerReactiveDisposer(result, unsubscribe))
-  setReactiveSubscribersChangeHandler(result, (count) => {
+  unsubscribers.forEach(unsubscribe => registerReactiveDisposer(result, unsubscribe))
+  setReactiveSubscribersChangeHandler(result, count => {
     subscriberCount = count
     disposeIfUnused()
   })
