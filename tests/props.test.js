@@ -104,4 +104,44 @@ describe('Props handling', () => {
     expect(handler1).toHaveBeenCalled()
     expect(handler2).toHaveBeenCalled()
   })
+
+  it('should handle class as an object with truthy/falsy values', () => {
+    const element = document.createElement('div')
+    handleProps(element, { class: [{ card: true, active: true, hidden: false }] })
+    expect(element.getAttribute('class')).toBe('card active')
+  })
+
+  it('should handle reactive class object', async () => {
+    const element = document.createElement('div')
+    const cls = createReactive({ card: true, active: false })
+    handleProps(element, { class: [cls] })
+    expect(element.getAttribute('class')).toBe('card')
+
+    cls.active = true
+    await Promise.resolve()
+    expect(element.getAttribute('class')).toBe('card active')
+  })
+
+  it('should handle style as an object with camelCase keys', () => {
+    const element = document.createElement('div')
+    handleProps(element, { style: [{ color: 'red', fontSize: '14px' }] })
+    expect(element.getAttribute('style')).toBe('color: red; font-size: 14px')
+  })
+
+  it('should handle style object with camelCase to kebab-case conversion', () => {
+    const element = document.createElement('div')
+    handleProps(element, { style: [{ backgroundColor: '#fff', marginTop: '8px' }] })
+    expect(element.getAttribute('style')).toBe('background-color: #fff; margin-top: 8px')
+  })
+
+  it('should handle reactive style object', async () => {
+    const element = document.createElement('div')
+    const styles = createReactive({ color: 'red' })
+    handleProps(element, { style: [styles] })
+    expect(element.getAttribute('style')).toBe('color: red')
+
+    styles.color = 'blue'
+    await Promise.resolve()
+    expect(element.getAttribute('style')).toBe('color: blue')
+  })
 })

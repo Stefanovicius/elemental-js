@@ -16,6 +16,7 @@ const context = {
 vm.runInNewContext(source, context)
 
 assert.equal(typeof windowObject.def, 'function')
+assert.equal(typeof windowObject.derive, 'function')
 assert.equal(typeof windowObject.el, 'function')
 assert.equal(typeof windowObject.txt, 'function')
 

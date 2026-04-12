@@ -1,8 +1,9 @@
 # Elemental.js Docs
 
-`elemental-lite` is a tiny browser-only UI library built around four exports:
+`elemental-lite` is a tiny browser-only UI library built around five exports:
 
 - `def` creates reactive values
+- `derive` derives from multiple reactive sources
 - `el` creates elements or selects existing DOM nodes
 - `txt` creates reactive text nodes
 - `parse` exposes the low-level template parser used by `el`
@@ -20,7 +21,7 @@ npm install elemental-lite
 With ESM:
 
 ```js
-import { def, el, txt } from 'elemental-lite'
+import { def, derive, el, txt } from 'elemental-lite'
 ```
 
 With CDN:
@@ -29,7 +30,7 @@ With CDN:
 <script src="https://cdn.jsdelivr.net/npm/elemental-lite/dist/elemental.min.js"></script>
 ```
 
-CDN usage exposes `def`, `el`, and `txt` on `window`.
+CDN usage exposes `def`, `derive`, `el`, and `txt` on `window`.
 
 ## Quick Start
 
@@ -119,6 +120,18 @@ Automatic DOM cleanup is built in. If a derived reactive is only used by DOM bin
 
 `dispose()` exists as an advanced escape hatch, but typical UI usage should not need it.
 
+## `derive`
+
+`derive(dependencies, handler)` creates a reactive derived from multiple sources:
+
+```js
+const firstName = def('Ada')
+const lastName = def('Lovelace')
+const fullName = derive([firstName, lastName], (first, last) => `${first} ${last}`)
+```
+
+The result updates when any dependency changes. Lifecycle cleanup follows the same rules as the `.derive()` method.
+
 ## `el`
 
 `el` has two modes.
@@ -143,10 +156,7 @@ const button = el`button disabled=${active} title=${title}`('Save')
 Children are passed by calling the returned function:
 
 ```js
-const view = el`div class="panel"`(
-  el`h1`('Hello'),
-  el`p`('World')
-)
+const view = el`div class="panel"`(el`h1`('Hello'), el`p`('World'))
 ```
 
 ### 2. DOM Selection
@@ -192,6 +202,34 @@ Event handlers use `on...` props:
 
 ```js
 el`button onclick=${() => console.log('clicked')}`('Click')
+```
+
+Class object props:
+
+```js
+el`div class=${{ card: true, active: false, hidden: false }}`()
+```
+
+Only keys with truthy values are included. This works with reactive objects whose values are all booleans:
+
+```js
+const classes = def({ card: true, active: false })
+el`div class=${classes}`()
+classes.active = true
+```
+
+Style object props:
+
+```js
+el`div style=${{ color: 'red', fontSize: '14px' }}`()
+```
+
+CamelCase keys are converted to kebab-case. This works with reactive objects whose values are all strings or numbers:
+
+```js
+const styles = def({ color: 'red' })
+el`div style=${styles}`()
+styles.color = 'blue'
 ```
 
 ## Children
