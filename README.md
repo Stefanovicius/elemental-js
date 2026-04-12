@@ -11,7 +11,7 @@ Tired of the heavyweight frameworks? Want something simple yet powerful? Element
 - **Effortless Reactivity**: Breathe life into your UI with a straightforward reactivity model. Watch as your UI updates magically as your data changes.
 - **Zero Dependencies**: With Elemental.js, what you see is what you get - no external dependencies, just pure JavaScript wizardry.
 - **Lightweight and Fast**: Designed to be lean and mean. Enjoy the speed without the bloat of larger frameworks.
-- **Easy to Learn**: Jump right in, even if you're not a sorcerer of JavaScript. Clear syntax makes it a breeze.
+- **Easy to Learn**: Jump right in, even if you're not a sorcerer of JavaScript. Clear syntax makes it a breeze. Check the [documentation](DOCS.md).
 
 ## Getting Started
 
@@ -60,11 +60,11 @@ counter.append(Counter())
 
 ## Notes
 
-Elemental.js is a small hobby experiment. It is intentionally simple, still lightly validated, and should be treated as an exploratory library rather than a production-proven framework.
+Elemental.js is intentionally simple and experimental. It should be treated as a focused, exploratory library rather than a battle-tested framework.
 
 It is browser-only and expects a live DOM environment with `document`, `Node`, `customElements`, and `Promise` microtasks.
 
-Lifecycle cleanup currently relies on customized built-in custom elements via `customElements.define(..., { extends })` and `document.createElement(tag, { is })`. That keeps the implementation small, but browser support for this pattern is narrower than baseline DOM support. In environments without it, element creation or automatic cleanup can fail.
+**Browser Support**: Lifecycle cleanup relies on customized built-in custom elements (`customElements.define(..., { extends })` and `document.createElement(tag, { is })`). This works in Chrome, Firefox, and Edge. **Safari/WebKit does not support this pattern**, so automatic cleanup and element creation may fail in Safari.
 
 ## Let the Elements Be With You
 

@@ -14,14 +14,14 @@ if (!allowedReleaseTypes.has(releaseType)) {
 
 const root = path.resolve(__dirname, '..')
 
-const run = (command, args) =>
-  execFileSync(command, args, { stdio: 'inherit', cwd: root })
+const run = (command, args) => execFileSync(command, args, { stdio: 'inherit', cwd: root })
+const capture = (command, args) => execFileSync(command, args, { cwd: root, encoding: 'utf8' }).trim()
 
-const capture = (command, args) =>
-  execFileSync(command, args, { cwd: root, encoding: 'utf8' }).trim()
-
-const pass = (msg) => console.log(`\x1b[32m\u2713\x1b[0m ${msg}`)
-const fail = (msg) => { console.error(`\x1b[31m\u2717 ${msg}\x1b[0m`); process.exit(1) }
+const pass = msg => console.log(`\x1b[32m\u2713\x1b[0m ${msg}`)
+const fail = msg => {
+  console.error(`\x1b[31m\u2717 ${msg}\x1b[0m`)
+  process.exit(1)
+}
 
 // --- Pre-flight checks ---
 
@@ -37,14 +37,21 @@ capture('git', ['fetch', 'origin', 'main', 'dev'])
 
 const ahead = capture('git', ['rev-list', '--count', 'origin/main..main'])
 const behindMain = capture('git', ['rev-list', '--count', 'main..origin/main'])
-if (ahead !== '0' || behindMain !== '0') fail(`main out of sync with origin (${ahead} ahead, ${behindMain} behind). Push or pull first.`)
+if (ahead !== '0' || behindMain !== '0')
+  fail(`main out of sync with origin (${ahead} ahead, ${behindMain} behind). Push or pull first.`)
 pass('Synced with origin/main')
 
 if (!hotfix) {
   const behindDev = capture('git', ['rev-list', '--count', 'main..origin/dev'])
-  if (behindDev !== '0') fail(`main is ${behindDev} commit(s) behind origin/dev. Merge dev first (or use --hotfix).`)
+  if (behindDev !== '0')
+    fail(`main is ${behindDev} commit(s) behind origin/dev. Merge dev first (or use --hotfix).`)
   pass('dev merged into main')
 }
+
+const lastTag = capture('git', ['describe', '--tags', '--abbrev=0'])
+const changesSinceTag = capture('git', ['rev-list', '--count', `${lastTag}..HEAD`])
+if (changesSinceTag === '0') fail('No changes since last release. Nothing to release.')
+pass('Changes exist since last release')
 
 if (!process.env.NPM_TOKEN) fail('NPM_TOKEN not set.')
 pass('NPM_TOKEN set')
@@ -81,8 +88,12 @@ try {
   pass(`Released ${tag}`)
 } catch (error) {
   console.error(`\x1b[31m\u2717 Release failed, rolling back\u2026\x1b[0m`)
-  try { run('git', ['tag', '-d', tag]) } catch {}
-  try { run('git', ['reset', '--hard', 'HEAD~1']) } catch {
+  try {
+    run('git', ['tag', '-d', tag])
+  } catch {}
+  try {
+    run('git', ['reset', '--hard', 'HEAD~1'])
+  } catch {
     run('git', ['checkout', '--', 'package.json', 'pnpm-lock.yaml', 'README.md'])
   }
   throw error
