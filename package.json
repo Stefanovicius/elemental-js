@@ -1,6 +1,6 @@
 {
   "name": "elemental-lite",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "A tiny, lightweight, fast, and dependency-free vanilla JavaScript UI lib.",
   "keywords": [
     "ui",
