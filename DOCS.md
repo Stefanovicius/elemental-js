@@ -69,7 +69,7 @@ list.push('c')
 list.val = ['x', 'y']
 ```
 
-Objects are reactive proxies. You can mutate properties directly, and `.val` refers to the reactive object itself:
+Objects are reactive proxies. You can mutate properties directly:
 
 ```js
 const state = def({ name: 'Ada', done: false })
@@ -78,6 +78,18 @@ state.val = { name: 'Linus', done: true }
 ```
 
 When assigning to `.val` on an object reactive, pass a non-null object.
+
+### Reading `.val`
+
+For objects and arrays, `.val` returns the raw underlying data, not the proxy. This means mutations through `.val` bypass reactivity:
+
+```js
+const state = def({ count: 0 })
+state.count = 1 // reactive — triggers subscribers
+state.val.count = 2 // silent — bypasses the proxy
+```
+
+This is useful when you need a plain snapshot for serialization, comparison, or passing to external code.
 
 ### `subscribe()`
 
@@ -218,6 +230,15 @@ el`div class=${classes}`()
 classes.active = true
 ```
 
+It also works with plain objects containing reactive boolean values:
+
+```js
+const isActive = def(false)
+const isHidden = def(false)
+el`div class=${{ card: true, active: isActive, hidden: isHidden }}`()
+isActive.val = true
+```
+
 Style object props:
 
 ```js
@@ -230,6 +251,15 @@ CamelCase keys are converted to kebab-case. This works with reactive objects who
 const styles = def({ color: 'red' })
 el`div style=${styles}`()
 styles.color = 'blue'
+```
+
+Plain objects with reactive string or number values also work:
+
+```js
+const color = def('red')
+const fontSize = def('14px')
+el`div style=${{ color, fontSize }}`()
+color.val = 'blue'
 ```
 
 ## Children
@@ -322,5 +352,6 @@ Cleanup runs when the owning custom element disconnects or when child nodes are 
 
 - For primitives, use `.val`.
 - For objects and arrays, direct mutation works because they are proxies.
+- Reading `.val` on objects and arrays returns the raw data, bypassing the proxy. Mutations through `.val` are silent.
 - For object text/prop rendering, JavaScript coercion rules apply.
 - `el(selector)` always returns an array, so required roots should be checked explicitly.

@@ -1,6 +1,5 @@
 import { isReactive } from '../reactive/core'
-import { attachOwner, detachOwner } from '../reactive/lifecycle'
-import { registerCleanup } from './cleanup'
+import { bindReactive } from './cleanup'
 
 export const text = (strings, ...interpolations) => {
   const textNode = document.createTextNode('')
@@ -15,12 +14,7 @@ export const text = (strings, ...interpolations) => {
   updateTextNode()
 
   interpolations.forEach(interpolation => {
-    if (isReactive(interpolation)) {
-      attachOwner(interpolation)
-      const unsubscribe = interpolation.subscribe(updateTextNode)
-      registerCleanup(textNode, unsubscribe)
-      registerCleanup(textNode, () => detachOwner(interpolation))
-    }
+    if (isReactive(interpolation)) bindReactive(textNode, interpolation, updateTextNode)
   })
   return textNode
 }

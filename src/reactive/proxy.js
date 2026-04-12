@@ -3,9 +3,9 @@ import { isArray } from '../utilities'
 
 export const createReactiveProxy = (value, subscribe, derive, dispose, notify) =>
   new Proxy(value, {
-    get(target, prop, receiver) {
+    get(target, prop) {
       if (prop === REACTIVE) return true
-      if (prop === 'val') return isArray(target) ? target : receiver
+      if (prop === 'val') return target
       if (prop === 'subscribe') return subscribe
       if (prop === 'derive') return derive
       if (prop === 'dispose') return dispose

@@ -1,26 +1,28 @@
 import { isReactive } from '../reactive/core'
-import { attachOwner, detachOwner } from '../reactive/lifecycle'
-import { registerCleanup } from './cleanup'
+import { bindReactive, registerCleanup } from './cleanup'
 import { isBool, isObject, toKebabCase } from '../utilities'
 
 const getComputedValue = value => (isReactive(value) ? value.val : value)
 
 const isClassMap = object =>
-  isObject(object) && Object.values(object).every(value => typeof value === 'boolean')
+  isObject(object) && Object.values(object).every(value => isBool(getComputedValue(value)))
 
 const isStyleMap = object =>
   isObject(object) &&
-  Object.values(object).every(value => typeof value === 'string' || typeof value === 'number')
+  Object.values(object).every(value => {
+    const v = getComputedValue(value)
+    return typeof v === 'string' || typeof v === 'number'
+  })
 
 const objectToClass = object =>
   Object.entries(object)
-    .filter(([, value]) => value)
+    .filter(([, value]) => getComputedValue(value))
     .map(([key]) => key)
     .join(' ')
 
 const objectToStyle = object =>
   Object.entries(object)
-    .map(([key, value]) => `${toKebabCase(key)}: ${value}`)
+    .map(([key, value]) => `${toKebabCase(key)}: ${getComputedValue(value)}`)
     .join('; ')
 
 const handleEventListeners = (element, event, listeners) =>
@@ -55,10 +57,11 @@ const handleProp = (element, attribute, valueArr) => {
   updateProp()
   valueArr.forEach(value => {
     if (isReactive(value)) {
-      attachOwner(value)
-      const unsubscribe = value.subscribe(updateProp)
-      registerCleanup(element, unsubscribe)
-      registerCleanup(element, () => detachOwner(value))
+      bindReactive(element, value, updateProp)
+    } else if (isObject(value)) {
+      Object.values(value).forEach(v => {
+        if (isReactive(v)) bindReactive(element, v, updateProp)
+      })
     }
   })
 }

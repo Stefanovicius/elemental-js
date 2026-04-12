@@ -174,9 +174,17 @@ describe('Reactive objects', () => {
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
-  it('exposes the proxied object through val', () => {
+  it('exposes the underlying object through val', async () => {
     const reactive = createReactive({ count: 1 })
     expect(reactive.val.count).toBe(1)
+    expect(reactive.val).not.toBe(reactive)
+
+    const spy = vi.fn()
+    reactive.subscribe(spy)
+    reactive.val.count = 2
+    await Promise.resolve()
+    expect(spy).not.toHaveBeenCalled()
+    expect(reactive.count).toBe(2)
   })
 
   it('updates a derived value when an object property changes', async () => {

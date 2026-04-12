@@ -144,4 +144,40 @@ describe('Props handling', () => {
     await Promise.resolve()
     expect(element.getAttribute('style')).toBe('color: blue')
   })
+
+  it('should handle class map with reactive boolean values', async () => {
+    const element = document.createElement('div')
+    const isActive = createReactive(false)
+    const isHidden = createReactive(false)
+    handleProps(element, { class: [{ card: true, active: isActive, hidden: isHidden }] })
+    expect(element.getAttribute('class')).toBe('card')
+
+    isActive.val = true
+    await Promise.resolve()
+    expect(element.getAttribute('class')).toBe('card active')
+
+    isHidden.val = true
+    await Promise.resolve()
+    expect(element.getAttribute('class')).toBe('card active hidden')
+
+    isActive.val = false
+    await Promise.resolve()
+    expect(element.getAttribute('class')).toBe('card hidden')
+  })
+
+  it('should handle style map with reactive string values', async () => {
+    const element = document.createElement('div')
+    const color = createReactive('red')
+    const fontSize = createReactive('14px')
+    handleProps(element, { style: [{ color, fontSize }] })
+    expect(element.getAttribute('style')).toBe('color: red; font-size: 14px')
+
+    color.val = 'blue'
+    await Promise.resolve()
+    expect(element.getAttribute('style')).toBe('color: blue; font-size: 14px')
+
+    fontSize.val = '16px'
+    await Promise.resolve()
+    expect(element.getAttribute('style')).toBe('color: blue; font-size: 16px')
+  })
 })

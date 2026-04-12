@@ -93,4 +93,28 @@ describe('cleanup', () => {
     await Promise.resolve()
     expect(spy).toHaveBeenCalledTimes(1)
   })
+
+  it('cleans up discarded elements that match existing ones', async () => {
+    const parent = createElement()
+    const trigger = createReactive(0)
+    const spy = vi.fn()
+
+    const derived = trigger.derive(() => {
+      const span = document.createElement('span')
+      span.textContent = 'same'
+      registerCleanup(span, spy)
+      return [span]
+    })
+
+    handleChildren(parent, [derived])
+    expect(parent.textContent).toBe('same')
+    expect(spy).not.toHaveBeenCalled()
+
+    trigger.val = 1
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(parent.textContent).toBe('same')
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
 })
